@@ -2,6 +2,7 @@
 // #include "fileSystem.hpp"
 // #include "WebServerManage.h"
 // #include "freertos/FreeRTOS.h"
+#include "WebServerManage.h"
 // extern "C" void app_main(void){
 
 // }
@@ -52,11 +53,6 @@ void example_usage() {
     // 注意：这里需要扩展 JsonDocument 类来支持嵌套对象
     // 在实际实现中，可以添加 addObject 方法
 };
-
-
-
-
-
 
 extern "C" void app_main(void){
 

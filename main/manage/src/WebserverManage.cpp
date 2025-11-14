@@ -1,52 +1,18 @@
-// #include "WebServerManage.h"
-// #include <WebServers.h>
-// WebServers::WebServers(){
-// 	init_hybrid_cpu_monitor();
-// 	ap_ip=IPAddress(AP_IP);
+#include "WebServerManage.h"
+using namespace manager;
+
+WebServerManage::WebServerManage(){
+    // 	ap_ip=IPAddress(AP_IP);
 // 	ap_gateway=IPAddress(AP_GATEWAY);
 // 	ap_subnet=IPAddress(AP_SUBNET);
-// }
-// WebServers::~WebServers(){
-// }
-// void WebServers::begin(){
-// 	pinMode(2, OUTPUT);
-// 	load_config();
-// 	if(sta_ssid!=""){
-// 		DEBUGE_PRINTF("尝试连接已保存的WiFi: %s\n", sta_ssid.c_str());
-// 		STA_init();
-// 		unsigned long start = millis();
-// 		while (WiFi.status() != WL_CONNECTED && millis() - start < 10000) {
-// 			delay(500);
-// 			DEBUGE_PRINT(".");
-// 		}
-// 		if (WiFi.status() == WL_CONNECTED) {
-// 			DEBUGE_PRINTLN("\nSTA连接成功!");
-// 			DEBUGE_PRINT("WiFi已连接,访问地址:http://");
-// 			DEBUGE_PRINTLN(WiFi.localIP());
-// 			index_web_server();
-// 			return;  // 跳过后续AP配置步骤
-// 		} else {
-// 			DEBUGE_PRINTLN("\nSTA连接失败,启动配置模式...");
-// 			wifi_config_server();
-// 		}
-// 	}
-// 	wifi_config_server();
-// }
 
-// void WebServers::read_html(String htmlPath){
-// 	if(!LittleFS.begin(true)){
-// 		DEBUGE_PRINT("LittleFS初始化失败!");
-// 	}
-// 	File file = LittleFS.open(htmlPath, "r");
-// 	if(!file){
-// 		DEBUGE_PRINT("LittleFS初始化成功,但无法打开wifi.html文件!");  
-// 	}
-// 	index_html=LittleFS.open(htmlPath, "r").readString();
-// 	file.close();
+}
+WebServerManage::~WebServerManage(){
 
-// }   
-// void WebServers::AP_init(){
-//     WiFi.mode(WIFI_AP_STA);  // 先切换到混合模式
+}
+
+void WebServerManage::initAP(){
+    //   WiFi.mode(WIFI_AP_STA);  // 先切换到混合模式
 //     WiFi.softAPConfig(ap_ip, ap_gateway, ap_subnet);
     
 // 	bool ap_started = WiFi.softAP(*ap_ssid, *ap_password);
@@ -62,67 +28,25 @@
 //   	}
 // #endif
 
-// }
-// void WebServers::STA_init(){
-// 	DEBUGE_PRINTLN("启动到STA模式");
+}
+void WebServerManage::initSTA(){
+     	// DEBUGE_PRINTLN("启动到STA模式");
 // 	WiFi.begin(sta_ssid.c_str(), sta_password.c_str());
-// }
 
-// void WebServers::wifi_config_server(){
-// 	AP_init();
-// 	read_html("/wifi.html");
-
-// 	server->on("/",HTTP_GET,[this](AsyncWebServerRequest *request){
-// 		this->config_root(request);
-// 	});
-// 	server->on("/save", HTTP_POST,[this](AsyncWebServerRequest *request){
-// 		this->save_config(request);
-// 	});
-// 	server->onNotFound([this](AsyncWebServerRequest *request){
-// 		this->not_found(request);
-// 	});
-// 	server->begin();
-// 	DEBUGE_PRINTLN("WifiConfigServer启动,等待配置...");
-// }
-// void WebServers::index_web_server(){
-// 	read_html("/index.html");
-
-// 	server->on("/",HTTP_GET,[this](AsyncWebServerRequest *request){
-// 		this->index_root(request);
-// 	});
-// 	// server->on("/reboot",HTTP_POST,[this](AsyncWebServerRequest *request){
-// 	// 	this->reboot(request);
-// 	// });
-// 	server->on("/data",HTTP_GET,[this](AsyncWebServerRequest *request){
-// 		this->data_request(request);
-
-// 	});
-// 	server->on("/device-info",HTTP_GET,[this](AsyncWebServerRequest *request){
-// 		this->load_device_info(request);
-// 	});
-// 	server->on("/update",HTTP_POST,[this](AsyncWebServerRequest *request){
-//       	request->send(200, "text/plain", "开始更新!");
-//     },
-// 	[this](AsyncWebServerRequest *request,
-// 		String filename, size_t index, uint8_t *data, size_t len, bool final){
-// 		this->update_system(request,filename,index,data,len,final);
-// 	});
-// 	server->on("/on",HTTP_POST,[this](AsyncWebServerRequest *request){
-// 		this->led_on(request);
-// 	});
-// 	server->on("/off",HTTP_POST,[this](AsyncWebServerRequest *request){
-// 		this->led_off(request);
-// 	});
-// 	server->onNotFound([this](AsyncWebServerRequest *request){
-// 		this->not_found(request);
-// 	});
-// 	server->begin();
-// 	DEBUGE_PRINTLN("index server启动");
-// }
-
-
-// void WebServers::load_config(){
-// 	prefs->begin("wifi_config", false);  // 打开名为"wifi_config"的命名空间（只读）
+}
+void WebServerManage::readHtml(string htmlPath){
+    // if(!LittleFS.begin(true)){
+// 		DEBUGE_PRINT("LittleFS初始化失败!");
+// 	}
+// 	File file = LittleFS.open(htmlPath, "r");
+// 	if(!file){
+// 		DEBUGE_PRINT("LittleFS初始化成功,但无法打开wifi.html文件!");  
+// 	}
+// 	index_html=LittleFS.open(htmlPath, "r").readString();
+// 	file.close();
+}
+void WebServerManage::loadConfig(){
+    // 	prefs->begin("wifi_config", false);  // 打开名为"wifi_config"的命名空间（只读）
 // 	sta_ssid = prefs->getString("ssid", "");
 // 	sta_password = prefs->getString("password", "");
 // 	prefs->end();
@@ -134,66 +58,22 @@
 // 	}
 // #endif
 
-// }
-// void WebServers::save_wifi(String ssid,String password){
-// 	prefs->begin("wifi_config", false);  // 打开命名空间（可写）
+}
+
+void WebServerManage::saveWifi(string ssid,string password){
+//  prefs->begin("wifi_config", false);  // 打开命名空间（可写）
 // 	prefs->putString("ssid", ssid);
 // 	prefs->putString("password", password);
 // 	prefs->end();
 // 	DEBUGE_PRINTF("已保存WiFi: %s\n", ssid.c_str());
-// }
 
-// void WebServers::config_root(AsyncWebServerRequest *request){
-// 	String html = index_html;
-	 
-//   	//扫描WiFi并生成下拉选项
-// 	String ssidOptions=get_wifi_scan_options();
-
-// 	//替换占位符
-// 	html.replace("%SSID_OPTIONS%", ssidOptions);  // 填充WiFi列表
-// 	html.replace("%STATUS%", "请选择WiFi并输入密码(无密码则留空)");  // 状态提示
-// 	DEBUGE_PRINTLN(html);
-// 	//发送网页给客户端
-// 	request->send(200, "text/html", html);
-// }
-// void WebServers::save_config(AsyncWebServerRequest *request){
-// 	if (request->hasArg("ssid") && request->hasArg("password")) {
-//     String new_ssid = request->arg("ssid");
-//     String new_password = request->arg("password");
+}
+string WebServerManage::getWifiScanOptions(){
     
-//     // 保存配置
-//     save_wifi(new_ssid, new_password);
-    
-//     // 更新STA参数并尝试连接
-//     sta_ssid = new_ssid;
-//     sta_password = new_password;
-//     STA_init();
-
-//     // 向网页返回连接状态
-//     String html = index_html;
-//     html.replace("%STATUS%", "配置已保存，正在连接...请等待重启");
-//     request->send(200, "text/html", html);
-
-//     // 延迟2秒后重启ESP32，使配置生效
-//     delay(2000);
-//     ESP.restart();
-//   } else {
-//     request->send(400, "text/plain", "参数错误");
-//   }
-
-// }
-// void WebServers::not_found(AsyncWebServerRequest *request){
-// 	DEBUGE_PRINT("未找到处理函数的请求路径:");
-// 	DEBUGE_PRINTLN(request->url()); 
-// 	DEBUGE_PRINT("请求方法");
-// 	DEBUGE_PRINTLN(request->method()==HTTP_GET?"GET":"POST");
-// 	request->send(404, "text/plain", "Not found");
-// }
-// String WebServers::get_wifi_scan_options(){
-// 	String options = "";
+    string options = "";
   
-// 	// 1. 扫描WiFi并获取数量
-// 	int n = WiFi.scanNetworks(false, false);  // 不扫描隐藏网络
+	//扫描WiFi并获取数量
+	// int n = WiFi.scanNetworks(false, false);  // 不扫描隐藏网络
 // 	Serial.printf("扫描到 %d 个WiFi网络\n", n);
 	
 // 	if (n == 0) {
@@ -244,11 +124,104 @@
 // 	WiFi.scanDelete();
 	
 // 	return options;
+    return "h"; 
 
+}
+void  WebServerManage::wifiConfigWebServer(){
+    // 	AP_init();
+// 	read_html("/wifi.html");
+
+// 	server->on("/",HTTP_GET,[this](AsyncWebServerRequest *request){
+// 		this->config_root(request);
+// 	});
+// 	server->on("/save", HTTP_POST,[this](AsyncWebServerRequest *request){
+// 		this->save_config(request);
+// 	});
+// 	server->onNotFound([this](AsyncWebServerRequest *request){
+// 		this->not_found(request);
+// 	});
+// 	server->begin();
+// 	DEBUGE_PRINTLN("WifiConfigServer启动,等待配置...");
+
+}
+void WebServerManage::configRoot(WebServerRequest *request){
+
+    // / 	String html = index_html;
+	 
+//   	//扫描WiFi并生成下拉选项
+// 	String ssidOptions=get_wifi_scan_options();
+
+// 	//替换占位符
+// 	html.replace("%SSID_OPTIONS%", ssidOptions);  // 填充WiFi列表
+// 	html.replace("%STATUS%", "请选择WiFi并输入密码(无密码则留空)");  // 状态提示
+// 	DEBUGE_PRINTLN(html);
+// 	//发送网页给客户端
+// 	request->send(200, "text/html", html);
 // }
+// void WebServers::save_config(AsyncWebServerRequest *request){
+// 	if (request->hasArg("ssid") && request->hasArg("password")) {
+//     String new_ssid = request->arg("ssid");
+//     String new_password = request->arg("password");
+    
+//     // 保存配置
+//     save_wifi(new_ssid, new_password);
+    
+//     // 更新STA参数并尝试连接
+//     sta_ssid = new_ssid;
+//     sta_password = new_password;
+//     STA_init();
 
-// void WebServers::index_root(AsyncWebServerRequest *request){
-// 	String html=index_html;
+//     // 向网页返回连接状态
+//     String html = index_html;
+//     html.replace("%STATUS%", "配置已保存，正在连接...请等待重启");
+//     request->send(200, "text/html", html);
+
+//     // 延迟2秒后重启ESP32，使配置生效
+//     delay(2000);
+//     ESP.restart();
+//   } else {
+//     request->send(400, "text/plain", "参数错误");
+//   }
+
+}
+void WebServerManage::indexWebServer(){
+    // read_html("/index.html");
+
+// 	server->on("/",HTTP_GET,[this](AsyncWebServerRequest *request){
+// 		this->index_root(request);
+// 	});
+// 	// server->on("/reboot",HTTP_POST,[this](AsyncWebServerRequest *request){
+// 	// 	this->reboot(request);
+// 	// });
+// 	server->on("/data",HTTP_GET,[this](AsyncWebServerRequest *request){
+// 		this->data_request(request);
+
+// 	});
+// 	server->on("/device-info",HTTP_GET,[this](AsyncWebServerRequest *request){
+// 		this->load_device_info(request);
+// 	});
+// 	server->on("/update",HTTP_POST,[this](AsyncWebServerRequest *request){
+//       	request->send(200, "text/plain", "开始更新!");
+//     },
+// 	[this](AsyncWebServerRequest *request,
+// 		String filename, size_t index, uint8_t *data, size_t len, bool final){
+// 		this->update_system(request,filename,index,data,len,final);
+// 	});
+// 	server->on("/on",HTTP_POST,[this](AsyncWebServerRequest *request){
+// 		this->led_on(request);
+// 	});
+// 	server->on("/off",HTTP_POST,[this](AsyncWebServerRequest *request){
+// 		this->led_off(request);
+// 	});
+// 	server->onNotFound([this](AsyncWebServerRequest *request){
+// 		this->not_found(request);
+// 	});
+// 	server->begin();
+// 	DEBUGE_PRINTLN("index server启动");
+
+}
+void WebServerManage::indexRoot(WebServerRequest *request){
+    	// String html=index_html;
 
 // 	DEBUGE_PRINTLN(html);
 
@@ -259,27 +232,22 @@
 // 	// request->send()
 // 	delay(2000);
 // 	esp_restart();
-// }
 
-// void WebServers::show_temaputer(AsyncWebServerRequest *request){
+}
+void WebServerManage::getCPUTemaputer(WebServerRequest *request){
 
-// }
-// void WebServers::set_port(){
-// 	String html=index_html;
-// }
-
-// void WebServers::led_on(AsyncWebServerRequest *request){
-// 	led->on();
+}
+void WebServerManage::ledOn(WebServerRequest *request){
+    // 	led->on();
 // 	request->send(200, "text/plain", "LED 已打开");
-// }
 
-// void WebServers::led_off(AsyncWebServerRequest *request){
-// 	led->off();
+}
+void WebServerManage::ledOff(WebServerRequest *request){
+     	// led->off();
 // 	request->send(200, "text/plain", "LED 已关闭");
-
-// }
-// void WebServers::data_request(AsyncWebServerRequest *request){
-// 	SensorData sensorData;
+}
+void WebServerManage::getSensorData(WebServerRequest *request){
+     	// SensorData sensorData;
 // 	sensor->GetData(&sensorData);
 // 	// cpuMonitor->update();
 
@@ -309,10 +277,12 @@
 // 	String jsonString;
 // 	serializeJson(doc,jsonString);
 // 	request->send(200,"application/json",jsonString);
-// }
-// void WebServers::update_system(AsyncWebServerRequest *request,String filename, size_t index, uint8_t *data, size_t len,bool final){
-	
-// 	if(index == 0){
+
+}
+void WebServerManage::updateSystem(WebServerRequest*reauest,string filename,size_t index,
+                                     uint8_t *data, size_t len, bool final){
+     	
+        // if(index == 0){
 // 		// 上传开始：初始化OTA更新
 // 		DEBUGE_PRINTF("开始接受固件:%s\n", filename.c_str());
 		
@@ -350,8 +320,45 @@
 // 			request->send(500, "text/plain", "固件验证失败");
 // 		}
 // 	}
-	
-// }
-// void WebServers::get_system_setting(AsyncWebServerRequest *request){
-	
-// }
+
+}
+void WebServerManage::notFound(WebServerRequest *request){
+    // / 	DEBUGE_PRINT("未找到处理函数的请求路径:");
+// 	DEBUGE_PRINTLN(request->url()); 
+// 	DEBUGE_PRINT("请求方法");
+// 	DEBUGE_PRINTLN(request->method()==HTTP_GET?"GET":"POST");
+// 	request->send(404, "text/plain", "Not found");
+
+}
+void WebServerManage::getSystemSetting(WebServerRequest*request){
+
+}
+
+void WebServerManage::begin(){
+    // pinMode(2, OUTPUT);
+// 	load_config();
+// 	if(sta_ssid!=""){
+// 		DEBUGE_PRINTF("尝试连接已保存的WiFi: %s\n", sta_ssid.c_str());
+// 		STA_init();
+// 		unsigned long start = millis();
+// 		while (WiFi.status() != WL_CONNECTED && millis() - start < 10000) {
+// 			delay(500);
+// 			DEBUGE_PRINT(".");
+// 		}
+// 		if (WiFi.status() == WL_CONNECTED) {
+// 			DEBUGE_PRINTLN("\nSTA连接成功!");
+// 			DEBUGE_PRINT("WiFi已连接,访问地址:http://");
+// 			DEBUGE_PRINTLN(WiFi.localIP());
+// 			index_web_server();
+// 			return;  // 跳过后续AP配置步骤
+// 		} else {
+// 			DEBUGE_PRINTLN("\nSTA连接失败,启动配置模式...");
+// 			wifi_config_server();
+// 		}
+// 	}
+// 	wifi_config_server();
+
+}
+void WebServerManage::setup(){
+
+}
