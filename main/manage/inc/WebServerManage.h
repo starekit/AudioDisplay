@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
 #include <memory>
+#include "wifi.h"
 #include "Webserver.h"
 #include "sensor.h"
 #include "JsonDocument.hpp"
 #include "esp_wifi.h"
+#include "preference.h"
 
-// #include "esp_rom_spiflash_defs.h"
 using namespace core;
 using namespace std;
 namespace manager{
@@ -35,14 +36,14 @@ namespace manager{
 //         IPAddress ap_subnet;
 		
 //         // STA模式默认配置参数
-			string sta_ssid="";
-			string sta_password="";
+			string staSsid="";
+			string staPassword="";
 
         	// uint8_t port=PORT;
-
+            unique_ptr<Wifi> wifi=make_unique<Wifi>();
 			unique_ptr<WebServer> server=make_unique<WebServer>();
-   
-        public:
+            unique_ptr<Preference> prefs=make_unique<Preference>();
+        public: 
             WebServerManage();
             ~WebServerManage();
 

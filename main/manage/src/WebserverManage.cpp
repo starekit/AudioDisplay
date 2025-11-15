@@ -46,27 +46,27 @@ void WebServerManage::readHtml(string htmlPath){
 // 	file.close();
 }
 void WebServerManage::loadConfig(){
-    // 	prefs->begin("wifi_config", false);  // 打开名为"wifi_config"的命名空间（只读）
-// 	sta_ssid = prefs->getString("ssid", "");
-// 	sta_password = prefs->getString("password", "");
+    prefs->begin("wifi_config");  // 打开名为"wifi_config"的命名空间（只读）
+	// staSsid = prefs->read("ssid");
+	// sta_password=prefs->read();
 // 	prefs->end();
-// #ifdef _DEBUGE_
-// 	if (sta_ssid != "") {
-// 		DEBUGE_PRINTF("读取到保存的WiFi: %s\n", sta_ssid.c_str());
-// 	} else {
-// 		DEBUGE_PRINT("未读取到保存的WiFi配置\n");
-// 	}
-// #endif
+#ifdef _DEBUGE_
+	if (staSsid != "") {
+		DEBUGE_PRINTF("读取到保存的WiFi: %s\n", sta_ssid.c_str());
+	} else {
+		DEBUGE_PRINT("未读取到保存的WiFi配置\n");
+	}
+#endif
 
 }
 
 void WebServerManage::saveWifi(string ssid,string password){
-//  prefs->begin("wifi_config", false);  // 打开命名空间（可写）
-// 	prefs->putString("ssid", ssid);
-// 	prefs->putString("password", password);
+	prefs->begin("wifi_config");  // 打开命名空间（可写）
+	prefs->save("ssid", ssid);
+	prefs->save("password", password);
 // 	prefs->end();
+	printf("已保存WiFi: %s\n", ssid.c_str());
 // 	DEBUGE_PRINTF("已保存WiFi: %s\n", ssid.c_str());
-
 }
 string WebServerManage::getWifiScanOptions(){
     
