@@ -12,6 +12,8 @@ WebServerManage::~WebServerManage(){
 }
 
 void WebServerManage::initAP(){
+	// server->mode()
+	// server->AP();
     //   WiFi.mode(WIFI_AP_STA);  // 先切换到混合模式
 //     WiFi.softAPConfig(ap_ip, ap_gateway, ap_subnet);
     
@@ -76,88 +78,85 @@ string WebServerManage::getWifiScanOptions(){
 	// int n = WiFi.scanNetworks(false, false);  // 不扫描隐藏网络
 // 	Serial.printf("扫描到 %d 个WiFi网络\n", n);
 	
-// 	if (n == 0) {
-// 		options = "<option value=''>未扫描到WiFi</option>";
-// 		return options;
-// 	}
-	
-// 	// 2. 将扫描结果存入自定义数组（WifiInfo结构体）
-// 	WifiInfo* wifiList = new WifiInfo[n];  // 动态创建数组
-// 	for (int i = 0; i < n; i++) {
-// 		wifiList[i].ssid = WiFi.SSID(i);     // 存储SSID
-// 		wifiList[i].rssi = WiFi.RSSI(i);     // 存储信号强度
-// 	}
-	
-// 	// 3. 对自定义数组按RSSI排序（从强到弱，信号越强rssi值越大）
-// 	for (int i = 0; i < n; i++) {                             //!!!待优化
-// 		for (int j = i + 1; j < n; j++) {
-// 		// 若j的信号比i强，则交换i和j的位置
-// 		if (wifiList[j].rssi > wifiList[i].rssi) {
-// 			WifiInfo temp = wifiList[i];
-// 			wifiList[i] = wifiList[j];
-// 			wifiList[j] = temp;
-// 		}
-// 		}
-// 	}
-	
-// 	// 4. 生成下拉选项（从排序后的数组中读取）
-// 	for (int i = 0; i < n; i++) {
-// 		String ssid = wifiList[i].ssid;
-// 		int rssi = wifiList[i].rssi;
-		
-// 		// 过滤空SSID
-// 		if (ssid.isEmpty()) continue;
-		
-// 		// 信号强度显示
-// 		String signal = "";
-// 		if (rssi > -50) signal = "（强）";
-// 		else if (rssi > -70) signal = "（中）";
-// 		else signal = "（弱）";
-		
-// 		// 拼接option标签
-// 		options += "<option value=\"" + ssid + "\">" + ssid + " " + signal + "</option>\n";
-// 	}
-	
-// 	// 5. 释放动态数组内存
-// 	delete[] wifiList;
-// 	// 清除WiFi库的扫描缓存
-// 	WiFi.scanDelete();
-	
-// 	return options;
-    return "h"; 
+	// if (n == 0) {
+	// 	options = "<option value=''>未扫描到WiFi</option>";
+	// 	return options;
+	// }
+	int n=10;
 
+	//  将扫描结果存入自定义数组（WifiInfo结构体）
+	WifiInfo* wifiList = new WifiInfo[n];  // 动态创建数组
+	for (int i = 0; i < n; i++) {
+		// wifiList[i].ssid = WiFi.SSID(i);     // 存储SSID
+		// wifiList[i].rssi = WiFi.RSSI(i);     // 存储信号强度
+	}
+
+	for (int i = 0; i < n; i++) {                             //!!!待优化
+		for (int j = i + 1; j < n; j++) {
+		// 若j的信号比i强，则交换i和j的位置
+		if (wifiList[j].rssi > wifiList[i].rssi) {
+			WifiInfo temp = wifiList[i];
+			wifiList[i] = wifiList[j];
+			wifiList[j] = temp;
+		}
+		}
+	}
+	
+	// 生成下拉选项（从排序后的数组中读取）
+	for (int i = 0; i < n; i++) {
+		string ssid = wifiList[i].ssid;
+		int rssi = wifiList[i].rssi;
+		
+		// 过滤空SSID
+		// if (ssid.isEmpty()) continue;
+		
+		// 信号强度显示
+		string signal = "";
+		if (rssi > -50) signal = "（强）";
+		else if (rssi > -70) signal = "（中）";
+		else signal = "（弱）";
+		
+		// 拼接option标签
+		options += "<option value=\"" + ssid + "\">" + ssid + " " + signal + "</option>\n";
+	}
+	delete[] wifiList;
+	// 清除WiFi库的扫描缓存
+	// WiFi.scanDelete();
+	
+	return options;
 }
 void  WebServerManage::wifiConfigWebServer(){
     // 	AP_init();
 // 	read_html("/wifi.html");
 
-// 	server->on("/",HTTP_GET,[this](AsyncWebServerRequest *request){
-// 		this->config_root(request);
-// 	});
-// 	server->on("/save", HTTP_POST,[this](AsyncWebServerRequest *request){
-// 		this->save_config(request);
-// 	});
-// 	server->onNotFound([this](AsyncWebServerRequest *request){
-// 		this->not_found(request);
-// 	});
-// 	server->begin();
+	server->on("/",HTTP_GET,[this](WebServerRequest *request){
+		this->configRoot(request);
+	});
+	server->on("/save", HTTP_POST,[this](WebServerRequest *request){
+		this->saveConfig(request);
+	});
+	// server->onNotFound([this](WebServerRequest *request){
+	// 	this->notFound(request);
+	// });
+	server->begin();
+	// printf("");
 // 	DEBUGE_PRINTLN("WifiConfigServer启动,等待配置...");
 
 }
 void WebServerManage::configRoot(WebServerRequest *request){
 
-    // / 	String html = index_html;
+	// string html = index_html;
 	 
-//   	//扫描WiFi并生成下拉选项
-// 	String ssidOptions=get_wifi_scan_options();
 
-// 	//替换占位符
-// 	html.replace("%SSID_OPTIONS%", ssidOptions);  // 填充WiFi列表
-// 	html.replace("%STATUS%", "请选择WiFi并输入密码(无密码则留空)");  // 状态提示
-// 	DEBUGE_PRINTLN(html);
-// 	//发送网页给客户端
-// 	request->send(200, "text/html", html);
-// }
+	string ssidOptions=getWifiScanOptions();
+
+	//替换占位符
+	// html.replace("%SSID_OPTIONS%", ssidOptions);  // 填充WiFi列表
+	// html.replace("%STATUS%", "请选择WiFi并输入密码(无密码则留空)");  // 状态提示
+	// printf("");
+	// 	DEBUGE_PRINTLN(html);
+	// request->send(200, "text/html", html);
+}
 // void WebServers::save_config(AsyncWebServerRequest *request){
 // 	if (request->hasArg("ssid") && request->hasArg("password")) {
 //     String new_ssid = request->arg("ssid");
@@ -183,40 +182,37 @@ void WebServerManage::configRoot(WebServerRequest *request){
 //     request->send(400, "text/plain", "参数错误");
 //   }
 
-}
+// }
 void WebServerManage::indexWebServer(){
     // read_html("/index.html");
 
-// 	server->on("/",HTTP_GET,[this](AsyncWebServerRequest *request){
-// 		this->index_root(request);
-// 	});
-// 	// server->on("/reboot",HTTP_POST,[this](AsyncWebServerRequest *request){
-// 	// 	this->reboot(request);
-// 	// });
-// 	server->on("/data",HTTP_GET,[this](AsyncWebServerRequest *request){
-// 		this->data_request(request);
-
-// 	});
-// 	server->on("/device-info",HTTP_GET,[this](AsyncWebServerRequest *request){
-// 		this->load_device_info(request);
-// 	});
-// 	server->on("/update",HTTP_POST,[this](AsyncWebServerRequest *request){
-//       	request->send(200, "text/plain", "开始更新!");
-//     },
-// 	[this](AsyncWebServerRequest *request,
-// 		String filename, size_t index, uint8_t *data, size_t len, bool final){
-// 		this->update_system(request,filename,index,data,len,final);
-// 	});
-// 	server->on("/on",HTTP_POST,[this](AsyncWebServerRequest *request){
-// 		this->led_on(request);
-// 	});
-// 	server->on("/off",HTTP_POST,[this](AsyncWebServerRequest *request){
-// 		this->led_off(request);
-// 	});
+	server->on("/",HTTP_GET,[this](WebServerRequest *request){
+		this->indexRoot(request);
+	});
+	// server->on("/reboot",HTTP_POST,[this](WebServerRequest *request){
+	// 	// this->reboot(request);
+	// });
+	server->on("/data",HTTP_GET,[this](WebServerRequest *request){
+		this->getSensorData(request);
+	});
+	server->on("/device-info",HTTP_GET,[this](WebServerRequest*request){
+		this->loadDeviceInfo(request);
+	});
+	// server->on("/update",HTTP_POST,[this](WebServerRequest*request){
+	// 	string filename, size_t index, uint8_t *data, size_t len, bool final);
+	// 	this->updateSystem(request,filename,index,data,len,final);
+	// });
+	server->on("/on",HTTP_POST,[this](WebServerRequest*request){
+		this->ledOn(request);
+	});
+	server->on("/off",HTTP_POST,[this](WebServerRequest *request){
+		this->ledOff(request);
+	});
 // 	server->onNotFound([this](AsyncWebServerRequest *request){
 // 		this->not_found(request);
 // 	});
-// 	server->begin();
+	server->begin();
+	// printf("....");
 // 	DEBUGE_PRINTLN("index server启动");
 
 }
@@ -239,12 +235,11 @@ void WebServerManage::getCPUTemaputer(WebServerRequest *request){
 }
 void WebServerManage::ledOn(WebServerRequest *request){
     // 	led->on();
-// 	request->send(200, "text/plain", "LED 已打开");
-
+	request->send(200, "text/plain", "LED 已打开");
 }
 void WebServerManage::ledOff(WebServerRequest *request){
      	// led->off();
-// 	request->send(200, "text/plain", "LED 已关闭");
+	request->send(200, "text/plain", "LED 已关闭");
 }
 void WebServerManage::getSensorData(WebServerRequest *request){
      	// SensorData sensorData;
@@ -336,10 +331,11 @@ void WebServerManage::getSystemSetting(WebServerRequest*request){
 
 void WebServerManage::begin(){
     // pinMode(2, OUTPUT);
-// 	load_config();
-// 	if(sta_ssid!=""){
+	loadConfig();
+	if(staSsid!=""){
+		// printf("";)
 // 		DEBUGE_PRINTF("尝试连接已保存的WiFi: %s\n", sta_ssid.c_str());
-// 		STA_init();
+// 		STAInit();
 // 		unsigned long start = millis();
 // 		while (WiFi.status() != WL_CONNECTED && millis() - start < 10000) {
 // 			delay(500);
@@ -355,8 +351,8 @@ void WebServerManage::begin(){
 // 			DEBUGE_PRINTLN("\nSTA连接失败,启动配置模式...");
 // 			wifi_config_server();
 // 		}
-// 	}
-// 	wifi_config_server();
+	}
+	wifiConfigWebServer();
 
 }
 void WebServerManage::setup(){

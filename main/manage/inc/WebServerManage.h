@@ -40,7 +40,6 @@ namespace manager{
 			string staPassword="";
 
         	// uint8_t port=PORT;
-            unique_ptr<Wifi> wifi=make_unique<Wifi>();
 			unique_ptr<WebServer> server=make_unique<WebServer>();
             unique_ptr<Preference> prefs=make_unique<Preference>();
         public: 
@@ -73,7 +72,7 @@ namespace manager{
         
         //wifi config server functions.
 			void configRoot(WebServerRequest *request);
-        	void saveRonfig(WebServerRequest *request);						
+        	void saveConfig(WebServerRequest *request);						
         	void notFound(WebServerRequest *request);
 
         public:

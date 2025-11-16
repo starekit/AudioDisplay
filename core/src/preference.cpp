@@ -34,7 +34,7 @@ void Preference::save(const string&key, const T &data){
     else if constexpr(is_same_v<T,int32_t>){
         nvs_set_i32(nvsHandle,key.c_str(),&data);
     }
-    else if constexpr(is_same_v<T,int64_t){
+    else if constexpr(is_same_v<T,int64_t>){
         nvs_set_i64(nvsHandle,key.c_str(),&data);
     }
     else if constexpr (is_same_v<T,string>){
@@ -53,7 +53,7 @@ void Preference::save(const string&key, const T &data){
         nvs_set_u64(nvsHandle,key.c_str(),&data);
     }
     else{
-        printf("存储类型错误,未知类型:\n",T);
+        // printf("存储类型错误,未知类型:\n",T)
     }
     nvs_commit(nvsHandle);
 
@@ -72,7 +72,7 @@ T Preference::read(const string &key){
     else if constexpr(is_same_v<T,int32_t>){
         nvs_get_i32(nvsHandle,key.c_str(),&data);
     }
-    else if constexpr(is_same_v<T,int64_t){
+    else if constexpr(is_same_v<T,int64_t>){
         nvs_get_i64(nvsHandle,key.c_str(),&data);
     }
     else if constexpr (is_same_v<T,string>){
@@ -91,7 +91,7 @@ T Preference::read(const string &key){
         nvs_get_u64(nvsHandle,key.c_str(),&data);
     }
     else{
-        printf("存储类型错误,未知类型:\n",T);
+        // printf("存储类型错误,未知类型:\n",T);
         return;
     }
     return data;

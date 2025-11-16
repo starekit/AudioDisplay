@@ -64,7 +64,7 @@ extern "C" void app_main(void){
     // ESP_ERROR_CHECK(ret);
     WebServer server;
 
-    server.STA("TPLK","Wang5203714");
+    // server.STA("TPLK","Wang5203714");
 
     if (server.begin()) {
         ESP_LOGI("Main", "🚀 Web Server Ready! Access at: http://192.168.0.100/");
@@ -164,11 +164,6 @@ extern "C" void app_main(void){
     });
 
  example_usage();
-
-
-
-
-
 
 
     while(1){
