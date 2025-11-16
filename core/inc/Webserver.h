@@ -31,12 +31,12 @@ namespace core{
 		private:
 			bool startServer();
 
-			static esp_err_t staticRequestHandler(httpd_req_t *req);       
+				static esp_err_t staticRequestHandler(httpd_req_t *req);       
 
-			esp_err_t instanceRequestHandler(httpd_req_t *req);
+				esp_err_t instanceRequestHandler(httpd_req_t *req);
 
-			static void wifi_event_handler(void*arg,esp_event_base_t event_base,
-											int32_t event_id,void*event_data);
+				static void wifi_event_handler(void*arg,esp_event_base_t event_base,
+												int32_t event_id,void*event_data);
 			//任务队列
 			public:
 				bool begin();
