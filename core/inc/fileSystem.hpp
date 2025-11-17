@@ -2,45 +2,45 @@
 #define FILE_SYSTEM_HPP_
 #include "string"
 #include "esp_littlefs.h"
-#include <stdio.h>
-#include <sys/unistd.h>
 #include <sys/stat.h>
-#include "esp_err.h"
 #include "esp_log.h"
-
 #include <memory>
+#define _ESP_DEBUGE_
 using namespace std;
 namespace core{
 	class FileSystem{
 		private:
-
+		#ifdef _ESP_DEBUGE_
+		  	static constexpr const char* TAG = "FileSystem";  // 在类内定义 TAG
+		#endif
 			const string path="/data";
 
 			esp_vfs_littlefs_conf_t conf{
 				.base_path="/data",
 				.partition_label="data",
 				.format_if_mount_failed=true,
-				.dont_mount=false,
+				.dont_mount=false
 			};
-			uint8_t maxFileHeapSize=10000;
-        	public:
+			
+			uint64_t maxFileHeapSize=1000000;
+        public:
 			FileSystem();
 			~FileSystem();
 
-        	private:
+        private:
 			void initLittlefs();
 
-	        	bool writeHTML();
-        		bool writeTXT();
-        		bool writeLOG();
+	        bool writeHTML();
+        	bool writeTXT();
+        	bool writeLOG();
 
-        	public:
+        public:
 			void createDirectory(const string dicPath); 
-        		string read(const string* fileName);
-        		void write(const  string *fileName,const string *file);
+			string read(const string* fileName);
+			void write(const  string *fileName,const string *file);
 			void del(const string *fileName);
 			void list();
-			
+		
 
 
 
@@ -58,11 +58,11 @@ namespace core{
 		if(err!=ESP_OK){
 		
 			if (err == ESP_FAIL) {
-				// ESP_LOGE(TAG, "Failed to mount or format filesystem");
+				ESP_LOGE(TAG, "Failed to mount or format filesystem");
 			} else if (err == ESP_ERR_NOT_FOUND) {
-				// ESP_LOGE(TAG, "Failed to find LittleFS partition");
+				ESP_LOGE(TAG, "Failed to find LittleFS partition");
 			} else {
-				// ESP_LOGE(TAG, "Failed to initialize LittleFS (%s)", esp_err_to_name(ret));
+				ESP_LOGE(TAG, "Failed to initialize LittleFS (%s)");
 			}
 			return;
 		}
@@ -71,7 +71,7 @@ namespace core{
 		if (err != ESP_OK) { 
 			// ESP_LOGE(TAG, "Failed to get LittleFS partition information (%s)", esp_err_to_name(ret));
 		} else {
-			// ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
+			ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
 		}
 				
 
@@ -79,40 +79,72 @@ namespace core{
 
 	string FileSystem::read(const string* fileName){
 
-		 // 读取文件
-		// ESP_LOGI(TAG, "Reading file");
-		auto f = fopen((path+"/"+*fileName).c_str(), "r");
+		auto f = fopen((path+"/"+*fileName).c_str(), "rb");
+		
 		if (f == NULL) {
-			// ESP_LOGE(TAG, "Failed to open file for reading");
-			return;
+			ESP_LOGE(TAG, "Failed to open file for reading");
+			return "EEEOR";
+		}
+		// 检查文件大小
+		size_t buffer_size = 10000;
+    	char* buffer = (char*)malloc(buffer_size);
+    	if (!buffer) ESP_LOGE(TAG,"Faild malloc memory!");
+    
+		size_t len = 0;
+		int c;
+		
+		while ((c = fgetc(f)) != EOF) {
+			// 需要更多空间
+			if (len + 1 >= buffer_size) {
+				buffer_size *= 2;
+				char *new_buffer = (char*)realloc(buffer, buffer_size);
+				if (!new_buffer) {
+					free(buffer);
+					ESP_LOGE(TAG,"Faild realloc memory!");
+					return "ERROR";
+				}
+				buffer = new_buffer;
+			}
+			
+			buffer[len++] = c;
+		}
+		if (len == 0 && c == EOF) {
+			free(buffer);
+			return "ERROR";  // 文件结束
 		}
 		
-		// string *line;
-		char* line=(char*)malloc(maxFileHeapSize*sizeof(char));
-		while (fgets(line, sizeof(line), f)) {
-			// 移除换行符
-			char* pos = strchr(line, '\n');
-			if (pos) {
-				*pos = '\0';
-			}
-			// ESP_LOGI(TAG, "Read from file: '%s'", line);
-		}
-		string outFile=line;
-		free(line);
-		fclose(f);
-		return outFile;
-    	}
+		buffer[len] = '\0';
+		string out(buffer);
+		free(buffer);
+
+		// if (!out.empty()) {
+		// // 检查是否包含异常字符
+		// 	for (char ch : out) {
+		// 		if (static_cast<unsigned char>(ch) > 127) {
+		// 			ESP_LOGI(TAG, "发现非ASCII字符,可能编码不匹配");
+		// 			break;
+		// 		}
+		// 	}
+		// }
+	    return out;
+    }
 	void FileSystem::write(const string*fileName ,const string *file){
-		auto *f =fopen((path+"/"+*fileName).c_str(),"w");
+		
+		if (fileName == nullptr || file == nullptr) {
+			ESP_LOGE("FileSystem", "Null pointer passed to write function");
+			return;
+    	}
+		auto *f =fopen((path+"/"+*fileName).c_str(),"wb");
+
 		if(f==nullptr){
-			// printf("")
+			ESP_LOGE(TAG,"Failed to open file for writing: %s", (path+"/"+*fileName).c_str());
 			return;
 		}
-		fprintf(f,file->c_str());
+		// ESP_LOGI("Write:","data:%s",file->c_str());
+		fwrite(file->c_str(), sizeof(char), file->size(), f);
+		fflush(f);
 		fclose(f);
-        	//write html
-        	//write txt
-	        //write LOG
+
 	}
 	void FileSystem::del(const string*fileName){
 		// unlink("/littlefs/greeting.txt");

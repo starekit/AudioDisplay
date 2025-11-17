@@ -40,8 +40,8 @@ namespace core{
 			//任务队列
 			public:
 				bool begin();
-				void STA(const string*ssid,const string *password);
-				void AP(const string* ssid,const string*password );
+				void STA(const string ssid,const string password);
+				void AP(const string ssid,const string password );
 				void on(const char*url, httpd_method_t method,
 				std::function<void (WebServerRequest *request)> handleFunction);
 				void on(const char* url, 

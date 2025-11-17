@@ -7,7 +7,7 @@ WebServer::WebServer(){
 	config = HTTPD_DEFAULT_CONFIG();
 	config.max_uri_handlers = 16;
 	config.stack_size = 8192;
-	server = NULL;
+	server = nullptr;
 	instance=this;
 }
 WebServer::~WebServer(){
@@ -32,80 +32,6 @@ bool WebServer::startServer(){
         return false;
     }
 }
-// void WebServer::sta_init(const char* ssid, const char* password){
-    // esp_event_loop_create_default();
-    
-    // 初始化网络接口
-    // esp_netif_init();
-    // esp_netif_create_default_wifi_sta();
-
-    // wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    // esp_wifi_init(&cfg);
-
-    // 注册WiFi事件处理器
-    // esp_event_handler_instance_t instance_any_id;
-    //     esp_event_handler_instance_register(WIFI_EVENT,
-    //                                     ESP_EVENT_ANY_ID,
-    //                                     &WebServer::wifi_event_handler,
-    //                                     this,
-    //                                     &instance_any_id);
-
-    // WiFi配置
-    // wifi->STA()//////////////////////////////////////////////////////
-//     wifi_config_t wifi_config = {};
-//     strncpy((char*)wifi_config.sta.ssid, ssid, sizeof(wifi_config.sta.ssid) - 1);
-//     wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
-    
-//     if (password && strlen(password) > 0) {
-//         strncpy((char*)wifi_config.sta.password, password, sizeof(wifi_config.sta.password) - 1);
-//         wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
-//         wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
-//     } else {
-//         wifi_config.sta.threshold.authmode = WIFI_AUTH_OPEN;
-//     }
-    
-//     // 设置其他字段
-//     wifi_config.sta.scan_method = WIFI_ALL_CHANNEL_SCAN;
-//     wifi_config.sta.sort_method = WIFI_CONNECT_AP_BY_SIGNAL;
-//     wifi_config.sta.threshold.rssi = -127;
-    
-//     esp_wifi_set_mode(WIFI_MODE_STA);
-//     esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
-//     esp_wifi_start();
-    
-//     ESP_LOGI("WebServer", "WiFi STA mode initialized for SSID: %s", ssid);
-// }
-// void WebServer::nvs_init(){
-//     esp_err_t ret = nvs_flash_init();
-//     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-//         ESP_ERROR_CHECK(nvs_flash_erase());
-//         ret = nvs_flash_init();
-//     }
-//     ESP_ERROR_CHECK(ret);
-// }       
-// void WebServer::wifi_event_handler(void*arg,esp_event_base_t event_base,int32_t event_id,void*event_data){
-//     WebServer*server=static_cast<WebServer*>(arg);
-//     if(!server) return;
-//     if(event_base==WIFI_EVENT){
-//         switch (event_id) {
-//             case WIFI_EVENT_STA_START:
-//                 ESP_LOGI("WebServer", "WiFi STA start");
-//                 esp_wifi_connect();
-//                 break;
-//             case WIFI_EVENT_STA_CONNECTED:
-//                 ESP_LOGI("WebServer", "WiFi connected");
-//                 break;
-//             case WIFI_EVENT_STA_DISCONNECTED:
-//                 ESP_LOGI("WebServer", "WiFi disconnected, reconnecting...");
-//                 esp_wifi_connect();
-//                 break;
-        
-//             default:
-//                 ESP_LOGI("ERROR!","wifi event handler");
-//                 break;
-//             }
-//     }
-// }
 
 void WebServer::on(const char*url, httpd_method_t method,
     std::function<void (WebServerRequest* request)> handleFunction){
@@ -149,10 +75,10 @@ esp_err_t WebServer::instanceRequestHandler(httpd_req_t *req){
         }
     return ESP_FAIL;
 }
-void WebServer::STA(const string *ssid,const string* password){
-	// wifi->STA();
+void WebServer::STA(const string ssid,const string password){
+	wifi->STA(ssid,password);
 }
-void WebServer::AP(const string*ssid,const string*password){
+void WebServer::AP(const string ssid,const string password){
 	// wifi->AP()
 
 }

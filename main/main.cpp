@@ -21,6 +21,8 @@ using namespace core;
 #include "esp_log.h"
 
 #include "JsonDocument.hpp"
+static constexpr const char* TAG = "Main";  // 在类内定
+string test_html;
 void example_usage() {
     // 创建文档
     JsonDocument doc;
@@ -54,27 +56,9 @@ void example_usage() {
 };
 
 extern "C" void app_main(void){
-
-    // esp_err_t ret = nvs_flash_init();
-    // if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-    //     ESP_ERROR_CHECK(nvs_flash_erase());
-    //     ret = nvs_flash_init();
-    // }
-    // ESP_ERROR_CHECK(ret);
-    WebServer server;
-
-    // server.STA("TPLK","Wang5203714");
-
-    if (server.begin()) {
-        ESP_LOGI("Main", "🚀 Web Server Ready! Access at: http://192.168.0.100/");
-        ESP_LOGI("Main", "Web server started successfully");
-    } else {
-        ESP_LOGE("Main", "Failed to start web server");
-    }
-
-    server.on("/", HTTP_GET, [](WebServerRequest* req){
-           const char *resp =R"(
-<!DOCTYPE html>
+	FileSystem fileSystem;
+	string word=R"(
+<!DOCTYPE html> 
 <html>
 
 <head>
@@ -147,22 +131,32 @@ extern "C" void app_main(void){
 	</form>
 	<p id="status" style="text-align: center;">%STATUS%</p> 
 </body>
-
-
-
-<script>
-
-
-</script>
-
-
-
 </html>)";
-        req->send(200, "text/html",resp);
 
-    });
 
- example_usage();
+
+	string fileName="wifii.html";
+	fileSystem.write(&fileName,&word);
+
+	ESP_LOGI(TAG,"HTML%s",test_html.c_str());
+    WebServer server;
+
+	const string Ssid="TPLK";
+	const string Password="Wang5203714";
+
+    server.STA(Ssid,Password);
+
+   	server.begin();
+
+	test_html=fileSystem.read(&fileName);
+	// ESP_LOGI("HTML","JSON:%s",test_html.c_str());
+
+    server.on("/", HTTP_GET, [](WebServerRequest* req){
+		req->send(200, "text/html",test_html.c_str());
+	});
+
+
+//  example_usage();
 
 
     while(1){
@@ -171,15 +165,8 @@ extern "C" void app_main(void){
             ESP_LOGI("Main", "System running - Free heap: %lu bytes", esp_get_free_heap_size());
         }
         
-        // 必须让出CPU时间！
         vTaskDelay(500 / portTICK_PERIOD_MS);  // 延迟500毫秒
 
     }
         
-    // // 使用 C++ 特性
-    // int count = 0;
-    // while (1) {
-    //     printf("Counter: %d\n", count++);
-    //     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    // }
 }
