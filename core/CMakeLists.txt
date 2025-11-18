@@ -24,6 +24,7 @@ idf_component_register(
         joltwallet__littlefs
         sdmmc
         bt
+        driver
         
      
 )

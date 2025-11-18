@@ -10,8 +10,13 @@ namespace core{
 		private:
 			static constexpr const char* TAG = "Wifi"; 
         public:
-			Wifi();
-			~Wifi();
+			Wifi(){
+				initNVS();
+				initWifi();
+			}
+			~Wifi(){
+				
+			}
         private:
 			void initNVS();    
             static void wifiEventHandler(void* arg, esp_event_base_t event_base,

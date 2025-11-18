@@ -1,12 +1,14 @@
 #pragma once
 #include <string>
 #include <memory>
-#include "wifi.h"
+#include "Wifi.h"
 #include "Webserver.h"
-#include "sensor.h"
+#include "FileSystem.h"
+#include "Sensor.h"
 #include "JsonDocument.hpp"
 #include "esp_wifi.h"
-#include "preference.h"
+#include "Preference.h"
+#include "SystemMonitor.h"
 
 using namespace core;
 using namespace std;
@@ -14,7 +16,8 @@ namespace manager{
 
     constexpr const char* AP_SSID = "ESP32";
     constexpr const char* AP_PASSWORD="12345678";
-
+    const string Ssid="TPLK";
+    const string Password="Wang5203714";
     // #define PORT 80
         
 
@@ -25,10 +28,13 @@ namespace manager{
 
 
     class WebServerManage{
+        
         private:
-            //  unique_ptr<LED> led=make_unique<LED>();
-        	unique_ptr<Sensor> sensor=make_unique<Sensor>();
-        	string indexHtml;
+
+            const string wifiWebName="wifi.html";
+            const string indexWebName="index.html";
+        	string webHtml;
+            static constexpr const char* TAG = "WebServerManage";  // 在类内定义 TAG
 		
 //         //AP模式默认配置参数
 //         IPAddress ap_ip;
@@ -38,8 +44,10 @@ namespace manager{
 //         // STA模式默认配置参数
 			string staSsid="";
 			string staPassword="";
-
+            unique_ptr<SystemMonitor> systemMonitor=make_unique<SystemMonitor>();
+            unique_ptr<Sensor> sensor=make_unique<Sensor>();
         	// uint8_t port=PORT;
+            unique_ptr<FileSystem> fileSystem=make_unique<FileSystem>();
 			unique_ptr<WebServer> server=make_unique<WebServer>();
             unique_ptr<Preference> prefs=make_unique<Preference>();
         public: 
@@ -60,9 +68,9 @@ namespace manager{
         //index webserver functions.
         	void indexRoot(WebServerRequest *request);
         	void getCPUTemaputer(WebServerRequest *request);
-//         	void reboot(AsyncWebServerRequest *request);
+        	void reboot(WebServerRequest *request);
 //         	void setPort();
-//         	void setLEDColor(AsyncWebServerRequest *request);
+        	void setLEDColor(WebServerRequest *request);
         	void ledOn(WebServerRequest *request);
         	void ledOff(WebServerRequest *request);
         	void getSensorData(WebServerRequest *request);

@@ -1,3 +1,87 @@
+#pragma once
+#include <string>
+namespace html{
+
+const std::string wifiConfigHtml=R"(
+<!DOCTYPE html>
+<html>
+	
+<head>
+	<title>ESP32 联网配置界面</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<style>
+		body {
+			font-family: Arial;
+			text-align: center;
+			margin: 0;
+			padding: 0px;
+			background-color: aliceblue;
+		}
+
+		.wifi-form {
+			width: 80%;
+			max-width: 500px;
+			margin: 50px auto;
+			padding: 20px;
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+			background-color: rgb(255, 252, 252);
+		}
+
+		.wifi-select {
+			display: block;
+			width: 80%;
+			margin: 15px auto;
+			padding: 8px;
+			font-size: 16px;
+		}
+
+		.wifi-input {
+			display: block;
+			width: 76%;
+			margin: 15px auto;
+			padding: 8px;
+			font-size: 16px;
+		}
+
+		.submit-btn {
+			display: block;
+			margin: 20px auto;
+			padding: 10px 20px;
+			font-size: 16px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+	</style>
+</head>
+
+<body>
+	<h1 style="text-align: center;">配置WiFi连接</h1>
+	<form class="wifi-form" method="POST" action="/save">
+		<label style="display: block; text-align: center;">选择WiFi网络 (SSID):</label>
+		<select class="wifi-select" name="ssid" required>
+			<option value="">-- 请选择WiFi --</option>
+			%SSID_OPTIONS%
+		</select>
+
+		<label style="display: block; text-align: center;">WiFi密码:</label>
+		<input class="wifi-input" type="password" name="password" placeholder="无密码则留空">
+
+		<input class="submit-btn" type="submit" value="保存并连接">
+
+	</form>
+	<p id="status" style="text-align: center;">%STATUS%</p> 
+</body>
+</html>
+)";
+
+
+const std::string indexHtml=R"(
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -342,7 +426,7 @@
 										stroke="#3498db"
 										stroke-width="8"
 										stroke-linecap="round"
-										transform="rotate(-90 50 50)"
+										transform="rotate(-90 50 50)\n"
 										stroke-dasharray="251.2"
 										stroke-dashoffset="251.2"
 								/>
@@ -368,7 +452,7 @@
 										stroke="#3498db"
 										stroke-width="8"
 										stroke-linecap="round"
-										transform="rotate(-90 50 50)"
+										transform="rotate(-90 50 50)\n"
 										stroke-dasharray="251.2"
 										stroke-dashoffset="251.2"
 								/>
@@ -514,7 +598,7 @@
 
 		loadDeviceInfo(); // 加载设备信息
 
-		setInterval(fetchSensorData, 300);
+		setInterval(fetchSensorData, 1000);
 	};
 	function ControlInit(){
 		// updateStatus();
@@ -760,3 +844,8 @@
 </script>
 </body>
 </html>
+)";
+
+
+
+}

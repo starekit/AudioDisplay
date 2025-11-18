@@ -1,9 +1,9 @@
-#include "wifi.h"
+#include "WIFI.h"
 using namespace core;
-Wifi::Wifi(){
-	initNVS();
-	initWifi();
-}
+// Wifi::Wifi(){
+// 	initNVS();
+// 	initWifi();
+// }
 void Wifi::initNVS(){
 	if(nvs_flash_init()!=ESP_OK){
 		ESP_LOGE(TAG,"ERROR:init nvs flash");

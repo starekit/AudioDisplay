@@ -1,4 +1,4 @@
-#include "preference.h"
+#include "Preference.h"
 using namespace core;
 void Preference::initNVS(){
     esp_err_t ret=nvs_flash_init();

@@ -2,7 +2,7 @@
 using namespace manager;
 
 WebServerManage::WebServerManage(){
-    // 	ap_ip=IPAddress(AP_IP);
+// 	ap_ip=IPAddress(AP_IP);
 // 	ap_gateway=IPAddress(AP_GATEWAY);
 // 	ap_subnet=IPAddress(AP_SUBNET);
 
@@ -157,121 +157,116 @@ void WebServerManage::configRoot(WebServerRequest *request){
 	// 	DEBUGE_PRINTLN(html);
 	// request->send(200, "text/html", html);
 }
-// void WebServers::save_config(AsyncWebServerRequest *request){
-// 	if (request->hasArg("ssid") && request->hasArg("password")) {
-//     String new_ssid = request->arg("ssid");
-//     String new_password = request->arg("password");
+// void WebServerManage::save_config(WebServerRequest *request){
+// // 	if (request->hasArg("ssid") && request->hasArg("password")) {
+// //     String new_ssid = request->arg("ssid");
+// //     String new_password = request->arg("password");
     
-//     // 保存配置
-//     save_wifi(new_ssid, new_password);
+// //     // 保存配置
+// //     save_wifi(new_ssid, new_password);
     
-//     // 更新STA参数并尝试连接
-//     sta_ssid = new_ssid;
-//     sta_password = new_password;
-//     STA_init();
+// //     // 更新STA参数并尝试连接
+// //     sta_ssid = new_ssid;
+// //     sta_password = new_password;
+// //     STA_init();
 
-//     // 向网页返回连接状态
-//     String html = index_html;
-//     html.replace("%STATUS%", "配置已保存，正在连接...请等待重启");
-//     request->send(200, "text/html", html);
+// //     // 向网页返回连接状态
+// //     String html = index_html;
+// //     html.replace("%STATUS%", "配置已保存，正在连接...请等待重启");
+// //     request->send(200, "text/html", html);
 
-//     // 延迟2秒后重启ESP32，使配置生效
-//     delay(2000);
-//     ESP.restart();
-//   } else {
-//     request->send(400, "text/plain", "参数错误");
-//   }
+// //     // 延迟2秒后重启ESP32，使配置生效
+// //     delay(2000);
+// //     ESP.restart();
+// //   } else {
+// //     request->send(400, "text/plain", "参数错误");
+// //   }
 
 // }
 void WebServerManage::indexWebServer(){
-    // read_html("/index.html");
+	webHtml=fileSystem->read(&indexWebName);
+	server->STA(Ssid,Password);
+	server->begin();
 
 	server->on("/",HTTP_GET,[this](WebServerRequest *request){
 		this->indexRoot(request);
 	});
-	// server->on("/reboot",HTTP_POST,[this](WebServerRequest *request){
-	// 	// this->reboot(request);
-	// });
+	server->on("/reboot",HTTP_POST,[this](WebServerRequest *request){
+		this->reboot(request);
+	});
 	server->on("/data",HTTP_GET,[this](WebServerRequest *request){
 		this->getSensorData(request);
 	});
 	server->on("/device-info",HTTP_GET,[this](WebServerRequest*request){
 		this->loadDeviceInfo(request);
 	});
-	// server->on("/update",HTTP_POST,[this](WebServerRequest*request){
+	server->on("/update",HTTP_POST,[this](WebServerRequest*request){
 	// 	string filename, size_t index, uint8_t *data, size_t len, bool final);
 	// 	this->updateSystem(request,filename,index,data,len,final);
-	// });
+	});
 	server->on("/on",HTTP_POST,[this](WebServerRequest*request){
 		this->ledOn(request);
 	});
 	server->on("/off",HTTP_POST,[this](WebServerRequest *request){
 		this->ledOff(request);
 	});
-// 	server->onNotFound([this](AsyncWebServerRequest *request){
-// 		this->not_found(request);
-// 	});
-	server->begin();
-	// printf("....");
-// 	DEBUGE_PRINTLN("index server启动");
+	// server->onNotFound([this](WebServerRequest *request){
+	// 	this->not_found(request);
+	// });
+	ESP_LOGV(TAG,"index server启动");
 
 }
 void WebServerManage::indexRoot(WebServerRequest *request){
-    	// String html=index_html;
-
-// 	DEBUGE_PRINTLN(html);
-
-// 	request->send(200, "text/html", html);
-// }
-// void WebServers::reboot(AsyncWebServerRequest *request){
-// 	DEBUGE_PRINTLN("重启设备\n");
-// 	// request->send()
-// 	delay(2000);
-// 	esp_restart();
-
+    string html=webHtml;
+	ESP_LOGV(TAG,"%s",html);
+	request->sendHtml(&html);
+}
+void WebServerManage::reboot(WebServerRequest *request){
+	// esp_rom_delay_us()
+	// delay(2000);
+	esp_restart();
 }
 void WebServerManage::getCPUTemaputer(WebServerRequest *request){
 
 }
 void WebServerManage::ledOn(WebServerRequest *request){
     // 	led->on();
-	request->send(200, "text/plain", "LED 已打开");
+	// request->sendText(&"LED 已打开");
 }
 void WebServerManage::ledOff(WebServerRequest *request){
      	// led->off();
-	request->send(200, "text/plain", "LED 已关闭");
+	// request->send(200, "text/plain", "LED 已关闭");
 }
 void WebServerManage::getSensorData(WebServerRequest *request){
-     	// SensorData sensorData;
+     	
+	// SensorData sensorData;
 // 	sensor->GetData(&sensorData);
 // 	// cpuMonitor->update();
 
-// 	JsonDocument doc; 
+	JsonDocument doc; 
 
-// 	doc["type"] = "sensor_data";
-// 	doc["cpuTemp"] =sensorData.cpuTemperature;
-// 	doc["cpuUsage"]=50;
+	doc["type"] = "sensor_data";
+	doc["cpuTemp"] =systemMonitor->getCpuTemperature();
+	doc["cpuUsage"]=systemMonitor->getCpuUsed();
 // 	// doc["humi"] = sensorData.humidity;
 
-// 	// 转换为JSON字符串并返回
-// 	String jsonString;
-// 	serializeJson(doc, jsonString);
-// 	request->send(200,"application/json",jsonString);
-// }
-// void WebServers::load_device_info(AsyncWebServerRequest *request){
-// 	JsonDocument doc;
-// 	doc["type"]="device_info";
-// 	doc["version"]="0.0.1";
-// 	doc["uptime"]=1;
-// 	doc["usedStorage"]=1;
-// 	doc["totalStorage"]=3;
-// 	doc["rssi"]=20;
-// 	doc["ip"]=1922;
+	// 转换为JSON字符串并返回
+	   // 序列化
+    std::string jsonString = doc.serialize();
+	request->sendJson(200,&jsonString);
+}
+void WebServerManage::loadDeviceInfo(WebServerRequest *request){
+	JsonDocument doc;
+	doc["type"]="device_info";
+	doc["version"]="0.0.1";
+	doc["uptime"]=1;
+	doc["usedStorage"]=1;
+	doc["totalStorage"]=3;
+	doc["rssi"]=20;
+	doc["ip"]=1922;
 
-
-// 	String jsonString;
-// 	serializeJson(doc,jsonString);
-// 	request->send(200,"application/json",jsonString);
+	string jsonString=doc.serialize();
+	request->sendJson(200,&jsonString);
 
 }
 void WebServerManage::updateSystem(WebServerRequest*reauest,string filename,size_t index,
@@ -318,21 +313,21 @@ void WebServerManage::updateSystem(WebServerRequest*reauest,string filename,size
 
 }
 void WebServerManage::notFound(WebServerRequest *request){
-    // / 	DEBUGE_PRINT("未找到处理函数的请求路径:");
+	ESP_LOGE(TAG,"未找到处理函数的请求路径:%s",request);
 // 	DEBUGE_PRINTLN(request->url()); 
-// 	DEBUGE_PRINT("请求方法");
-// 	DEBUGE_PRINTLN(request->method()==HTTP_GET?"GET":"POST");
-// 	request->send(404, "text/plain", "Not found");
-
+	// ESP_LOGE(TAG,"请求方法:%s",request->);
+	// request->send(404, "text/plain", "Not found");
 }
 void WebServerManage::getSystemSetting(WebServerRequest*request){
 
 }
 
 void WebServerManage::begin(){
+	indexWebServer();
     // pinMode(2, OUTPUT);
-	loadConfig();
-	if(staSsid!=""){
+	// loadConfig();
+
+	// if(staSsid!=""){
 		// printf("";)
 // 		DEBUGE_PRINTF("尝试连接已保存的WiFi: %s\n", sta_ssid.c_str());
 // 		STAInit();
@@ -351,8 +346,8 @@ void WebServerManage::begin(){
 // 			DEBUGE_PRINTLN("\nSTA连接失败,启动配置模式...");
 // 			wifi_config_server();
 // 		}
-	}
-	wifiConfigWebServer();
+	// }
+	// wifiConfigWebServer();
 
 }
 void WebServerManage::setup(){
