@@ -28,9 +28,9 @@ idf_component_register(
         esp_partition
         freertos
         esp_timer
-        esp_event
         lwip
         mbedtls
+
     
     
 

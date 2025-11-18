@@ -22,5 +22,8 @@ idf_component_register(
         freertos
         json
         joltwallet__littlefs
-        sdmmc       
+        sdmmc
+        bt
+        
+     
 )
