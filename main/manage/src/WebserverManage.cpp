@@ -200,9 +200,8 @@ void WebServerManage::indexWebServer(){
 	server->on("/device-info",HTTP_GET,[this](WebServerRequest*request){
 		this->loadDeviceInfo(request);
 	});
-	server->on("/update",HTTP_POST,[this](WebServerRequest*request,string filename, size_t index, uint8_t *data, size_t len, bool final){
-	// 	string filename, size_t index, uint8_t *data, size_t len, bool final);
-	// 	this->updateSystem(request,filename,index,data,len,final);
+	server->onUpload("/update",HTTP_POST,[this](WebServerRequest*request,string filename, size_t index, uint8_t *data, size_t len, bool final){
+		this->updateSystem(request,filename,index,data,len,final);
 	});
 	server->on("/on",HTTP_POST,[this](WebServerRequest*request){
 		this->ledOn(request);
@@ -269,53 +268,48 @@ void WebServerManage::loadDeviceInfo(WebServerRequest *request){
 	request->sendJson(200,&jsonString);
 
 }
-void WebServerManage::updateSystem(WebServerRequest*reauest){
+void WebServerManage::updateSystem(WebServerRequest *request,string filename, size_t index, uint8_t *data, size_t len, bool final){
      	
-	    while ((received = httpd_req_recv(req, buf, sizeof(buf))) > 0) {
-        fwrite(buf, 1, received, fd);
-        total_received += received;
-        
-        // 可以在这里添加进度处理
-        printf("Received: %d bytes\n", total_received);
-    	}
-        // if(index == 0){
-// 		// 上传开始：初始化OTA更新
-// 		DEBUGE_PRINTF("开始接受固件:%s\n", filename.c_str());
-		
-// 		// 检查文件是否为.bin格式
-// 		if(!filename.endsWith(".bin")){
-// 			request->send(400, "text/plain", "错误：请上传.bin格式的固件");
-// 			return;
-// 		}
-		
-// 		// 启动OTA更新
+	if(index == 0){
+	// 上传开始：初始化OTA更新
+	ESP_LOGI(TAG,"开始接受固件:%s\n", filename.c_str());
+	
+	// 检查文件是否为.bin格式
+	// if(!filename.endsWith(".bin")){
+	// 	request->send(400, "text/plain", "错误：请上传.bin格式的固件");
+	// 	return;
+	// }
+	
+	// 启动OTA更新
 // 		if(!Update.begin(UPDATE_SIZE_UNKNOWN)){
 // 			Update.printError(Serial);
 // 			request->send(500, "text/plain", "OTA初始化失败");
 // 			return;
 // 		}
-// 	}
+	}
 
 // 	// 上传中：写入固件数据（包括第一次和中间的数据块）
-// 	if (len > 0) {
-// 		if (Update.write(data, len) != len) {
-// 			Update.printError(Serial);
-// 			// 可以选择在这里返回错误，或者继续尝试
-// 		}
-// 	}
+	if (len > 0) {
+		ESP_LOGE(TAG,"写入数据中");
+		// if (Update.write(data, len) != len) {
+		// 	Update.printError(Serial);
+		// 	// 可以选择在这里返回错误，或者继续尝试
+		// }
+	}
 
-// 	if(final){
-// 		// 上传完成：结束OTA更新并重启
-// 		if(Update.end(true)){ // true表示更新后重启
-// 			DEBUGE_PRINTF("固件更新完成，总大小：%u bytes\n", index + len);
-// 			request->send(200, "text/plain", "更新成功，设备即将重启");
-// 			delay(1000);
-// 			esp_restart();
-// 		} else {
-// 			Update.printError(Serial);
-// 			request->send(500, "text/plain", "固件验证失败");
-// 		}
-// 	}
+	if(final){
+		ESP_LOGI(TAG,"上传完成");
+		// 上传完成：结束OTA更新并重启
+		// if(Update.end(true)){ // true表示更新后重启
+		// 	DEBUGE_PRINTF("固件更新完成，总大小：%u bytes\n", index + len);
+		// 	request->send(200, "text/plain", "更新成功，设备即将重启");
+		// 	delay(1000);
+		// 	esp_restart();
+		// } else {
+		// 	Update.printError(Serial);
+		// 	request->send(500, "text/plain", "固件验证失败");
+		// }
+	}
 
 }
 void WebServerManage::notFound(WebServerRequest *request){
