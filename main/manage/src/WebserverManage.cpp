@@ -200,7 +200,7 @@ void WebServerManage::indexWebServer(){
 	server->on("/device-info",HTTP_GET,[this](WebServerRequest*request){
 		this->loadDeviceInfo(request);
 	});
-	server->on("/update",HTTP_POST,[this](WebServerRequest*request){
+	server->on("/update",HTTP_POST,[this](WebServerRequest*request,string filename, size_t index, uint8_t *data, size_t len, bool final){
 	// 	string filename, size_t index, uint8_t *data, size_t len, bool final);
 	// 	this->updateSystem(request,filename,index,data,len,final);
 	});
@@ -269,9 +269,15 @@ void WebServerManage::loadDeviceInfo(WebServerRequest *request){
 	request->sendJson(200,&jsonString);
 
 }
-void WebServerManage::updateSystem(WebServerRequest*reauest,string filename,size_t index,
-                                     uint8_t *data, size_t len, bool final){
+void WebServerManage::updateSystem(WebServerRequest*reauest){
      	
+	    while ((received = httpd_req_recv(req, buf, sizeof(buf))) > 0) {
+        fwrite(buf, 1, received, fd);
+        total_received += received;
+        
+        // 可以在这里添加进度处理
+        printf("Received: %d bytes\n", total_received);
+    	}
         // if(index == 0){
 // 		// 上传开始：初始化OTA更新
 // 		DEBUGE_PRINTF("开始接受固件:%s\n", filename.c_str());

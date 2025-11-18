@@ -1,6 +1,2 @@
-#include "FFT.h"
-namespace core{
-    // class FFT{
-
-    // };
-}
+#include "fft.h"
+using namespace core;
