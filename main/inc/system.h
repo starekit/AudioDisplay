@@ -5,6 +5,7 @@
 #include "system_monitor.h"
 #include "sensor.h"
 #include "led.h"
+#include "webserver_interface.h"
 
 using namespace core;
 // SystemMonitor systemMonitor;
@@ -23,7 +24,7 @@ class System{
 		std::unique_ptr<FileSystem> fileSystem=std::make_unique<FileSystem>();
 		std::unique_ptr<SystemMonitor> systemMonitor=std::make_unique<SystemMonitor>();
 
-
+		// std::unique_ptr<webserver::WebserverInterface> webserver_=std::make_unique<webserver::WebserverInterface>();
 		std::unique_ptr<Led> ledManage=std::make_unique<Led>();
 		std::unique_ptr<Sensor> sensorManage=std::make_unique<Sensor>();
 
@@ -82,5 +83,3 @@ class System{
 // constexpr const char* AP_PASSWORD="12345678";
 // const std::string Ssid="TPLK";
 // const std::string Password="Wang5203714";
-// const std::string wifiWebName="wifi.html";
-// const std::string indexWebName="index.html";
