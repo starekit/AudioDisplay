@@ -1,6 +1,6 @@
 #ifndef JSON_DOCUMN_HPP_
 #define JSON_DOCUMN_HPP_ 
-#include "string"
+#include "core.hpp"
 #include "cJSON.h"
 class JsonDocument{
     private:

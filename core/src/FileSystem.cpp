@@ -3,7 +3,9 @@ using namespace core;
 
 FileSystem::FileSystem(){
     creDataDic();
-    initLittlefs();
+    if(initLittlefs()!=ESP_OK){
+        //初始化 littlefs失败,stop//log in what.
+    }
     #ifdef _WRITEHTML_
         remountAndFormat();
         write(&wifiWebName,&wifiConfigHtml);
@@ -29,7 +31,7 @@ esp_err_t FileSystem::format(){
 
 }
 
-void FileSystem::remountAndFormat(){
+esp_err_t FileSystem::remountAndFormat(){
      // 先卸载
     esp_err_t ret = esp_vfs_littlefs_unregister(conf.partition_label);
     if (ret != ESP_OK) {
@@ -39,19 +41,21 @@ void FileSystem::remountAndFormat(){
     // 格式化
     ret = format();
     if (ret != ESP_OK) {
-
+        return ret;
     }
     
     ret = esp_vfs_littlefs_register(&conf);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "重新挂载失败: %s", esp_err_to_name(ret));
+        return ret;
     }
     
     ESP_LOGI(TAG, "重新挂载完成");
+    return ret;
 
 }
 
-bool FileSystem::folderExists(const string* path){
+bool FileSystem::folderExists(const std::string* path){
     struct stat st;
     if (stat(path->c_str(), &st) == 0) {
         return S_ISDIR(st.st_mode);  // 判断是否为目录
@@ -65,11 +69,11 @@ void FileSystem::creDataDic(){
     }
 }
 
-void FileSystem::createDirectory(const string dicPath){
+void FileSystem::createDirectory(const std::string dicPath){
     mkdir(("/"+dicPath).c_str(),0755);
 }
 
-void FileSystem::initLittlefs(){
+esp_err_t  FileSystem::initLittlefs(){
     esp_err_t err=esp_vfs_littlefs_register(&conf);
     if(err!=ESP_OK){
         
@@ -80,19 +84,21 @@ void FileSystem::initLittlefs(){
         } else {
             ESP_LOGE(TAG, "Failed to initialize LittleFS (%s)");
         }
-        return;
+        return err;
     }
     size_t total = 0, used = 0;
     err = esp_littlefs_info(conf.partition_label, &total, &used);
     if (err != ESP_OK) { 
-        // ESP_LOGE(TAG, "Failed to get LittleFS partition information (%s)", esp_err_to_name(ret));
+        ESP_LOGE(TAG, "Failed to get LittleFS partition information (%s)", esp_err_to_name(err));
+        return err;
     } else {
         ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
     }
+    return err;
                 
 }
 
-string FileSystem::read(const string* fileName){
+std::string FileSystem::read(const std::string* fileName){
 
     auto f = fopen((path+"/"+*fileName).c_str(), "rb");
     
@@ -129,7 +135,7 @@ string FileSystem::read(const string* fileName){
     }
     
     buffer[len] = '\0';
-    string out(buffer);
+    std::string out(buffer);
     free(buffer);
 
     // if (!out.empty()) {
@@ -144,7 +150,7 @@ string FileSystem::read(const string* fileName){
     return out;
 }
 
-void FileSystem::write(const string*fileName ,const string *file){
+void FileSystem::write(const std::string*fileName ,const std::string *file){
     
     if (fileName == nullptr || file == nullptr) {
         ESP_LOGE("FileSystem", "Null pointer passed to write function");
@@ -163,7 +169,7 @@ void FileSystem::write(const string*fileName ,const string *file){
 
 }
 
-void FileSystem::del(const string*fileName){
+void FileSystem::del(const std::string*fileName){
     // unlink("/littlefs/greeting.txt");
 }
 

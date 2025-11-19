@@ -1,17 +1,7 @@
 #pragma once
+#include "WIFI.h"
 #include "WebServerRequest.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_wifi.h"
-#include "esp_event.h"
-#include "esp_system.h"
-#include "nvs_flash.h"
-#include "esp_netif.h"
-#include <functional>
-#include "wifi.h"
-#include <memory>
 
-using namespace std;
 namespace core{
 
 	class WebServer{
@@ -23,10 +13,10 @@ namespace core{
 			std::unordered_map<std::string, RequestHandler> handlers;
 
 			// 文件上传处理器
-			using UploadHandler = std::function<void(WebServerRequest* request, string filename, size_t index, uint8_t* data, size_t len, bool final)>;
+			using UploadHandler = std::function<void(WebServerRequest* request, std::string filename, size_t index, uint8_t* data, size_t len, bool final)>;
 			std::unordered_map<std::string, UploadHandler> uploadHandlers;
 
-			unique_ptr<Wifi> wifi=make_unique<Wifi>();
+			std::unique_ptr<Wifi> wifi=std::make_unique<Wifi>();
 			// 静态函数需要访问的静态成员
 			static WebServer* instance;
 		public:
@@ -34,7 +24,7 @@ namespace core{
 			~WebServer();
 
 		private:
-			bool startServer();
+			esp_err_t startServer();
 
 			static esp_err_t staticRequestHandler(httpd_req_t *req);       
 			static esp_err_t staticUploadHandler(httpd_req_t *req);
@@ -47,9 +37,9 @@ namespace core{
 			void processMultipartUpload(httpd_req_t *req, UploadHandler handler, WebServerRequest* request);
 			//任务队列
 			public:
-				bool begin();
-				void STA(const string ssid,const string password);
-				void AP(const string ssid,const string password );
+				esp_err_t begin();
+				void STA(const std::string ssid,const std::string password);
+				void AP(const std::string ssid,const std::string password );
 				void on(const char*url, httpd_method_t method,
 				std::function<void (WebServerRequest *request)> handleFunction);
 				void on(const char* url, 

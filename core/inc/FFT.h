@@ -1,5 +1,6 @@
 #pragma once
-#include "math.h"
+#include "core.hpp"
+#include <math.h>
 namespace core{
     class FFT{
         public:

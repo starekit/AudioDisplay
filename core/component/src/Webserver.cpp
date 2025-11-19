@@ -17,20 +17,12 @@ WebServer::~WebServer(){
     }
     instance = nullptr;
 }
-bool WebServer::begin(){
+esp_err_t WebServer::begin(){
     return instance->startServer();
 }
 
-bool WebServer::startServer(){
-    
-    esp_err_t ret = httpd_start(&server, &config);
-    if (ret == ESP_OK) {
-        ESP_LOGI("WebServer", "HTTP server started");
-        return true;
-    } else {
-        ESP_LOGE("WebServer", "Failed to start HTTP server: %s", esp_err_to_name(ret));
-        return false;
-    }
+esp_err_t WebServer::startServer(){
+    return httpd_start(&server, &config);
 }
 
 void WebServer::on(const char*url, httpd_method_t method,
@@ -106,10 +98,10 @@ esp_err_t WebServer::handleUploadRequest(httpd_req_t *req){
         }
     return ESP_FAIL;
 }
-void WebServer::STA(const string ssid,const string password){
+void WebServer::STA(const std::string ssid,const std::string password){
 	wifi->STA(ssid,password);
 }
-void WebServer::AP(const string ssid,const string password){
+void WebServer::AP(const std::string ssid,const std::string password){
 	// wifi->AP()
 
 }
@@ -119,7 +111,7 @@ void WebServer::processMultipartUpload(httpd_req_t *req, UploadHandler handler, 
     char boundary[128];
     char buf[1024];
     int received;
-    string filename;
+    std::string filename;
     bool in_file_section = false;
     size_t file_data_start = 0;
     size_t total_received = 0;
@@ -154,7 +146,7 @@ void WebServer::processMultipartUpload(httpd_req_t *req, UploadHandler handler, 
                 if (name_start) {
                     char* name_end = strstr(name_start + 10, "\"");
                     if (name_end) {
-                        filename = string(name_start + 10, name_end - name_start - 10);
+                        filename = std::string(name_start + 10, name_end - name_start - 10);
                     }
                 }
                 

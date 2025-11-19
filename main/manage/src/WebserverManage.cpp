@@ -1,5 +1,5 @@
 #include "WebServerManage.h"
-using namespace manager;
+using namespace manage;
 
 WebServerManage::WebServerManage(){
 // 	ap_ip=IPAddress(AP_IP);
@@ -36,7 +36,7 @@ void WebServerManage::initSTA(){
 // 	WiFi.begin(sta_ssid.c_str(), sta_password.c_str());
 
 }
-void WebServerManage::readHtml(string htmlPath){
+void WebServerManage::readHtml(std::string htmlPath){
     // if(!LittleFS.begin(true)){
 // 		DEBUGE_PRINT("LittleFS初始化失败!");
 // 	}
@@ -50,8 +50,8 @@ void WebServerManage::readHtml(string htmlPath){
 void WebServerManage::loadConfig(){
     prefs->begin("wifi_config");  // 打开名为"wifi_config"的命名空间（只读）
 	// staSsid = prefs->read("ssid");
-	// sta_password=prefs->read();
-// 	prefs->end();
+	// staPassword=prefs->read();
+	prefs->end();
 #ifdef _DEBUGE_
 	if (staSsid != "") {
 		DEBUGE_PRINTF("读取到保存的WiFi: %s\n", sta_ssid.c_str());
@@ -62,17 +62,16 @@ void WebServerManage::loadConfig(){
 
 }
 
-void WebServerManage::saveWifi(string ssid,string password){
+void WebServerManage::saveWifi(std::string ssid,std::string password){
 	prefs->begin("wifi_config");  // 打开命名空间（可写）
 	prefs->save("ssid", ssid);
 	prefs->save("password", password);
-// 	prefs->end();
-	printf("已保存WiFi: %s\n", ssid.c_str());
-// 	DEBUGE_PRINTF("已保存WiFi: %s\n", ssid.c_str());
+	prefs->end();
+	ESP_LOGD(TAG,"已保存WiFi: %s\n", ssid.c_str());
 }
-string WebServerManage::getWifiScanOptions(){
+std::string WebServerManage::getWifiScanOptions(){
     
-    string options = "";
+    std::string options = "";
   
 	//扫描WiFi并获取数量
 	// int n = WiFi.scanNetworks(false, false);  // 不扫描隐藏网络
@@ -104,14 +103,14 @@ string WebServerManage::getWifiScanOptions(){
 	
 	// 生成下拉选项（从排序后的数组中读取）
 	for (int i = 0; i < n; i++) {
-		string ssid = wifiList[i].ssid;
+		std::string ssid = wifiList[i].ssid;
 		int rssi = wifiList[i].rssi;
 		
 		// 过滤空SSID
 		// if (ssid.isEmpty()) continue;
 		
 		// 信号强度显示
-		string signal = "";
+		std::string signal = "";
 		if (rssi > -50) signal = "（强）";
 		else if (rssi > -70) signal = "（中）";
 		else signal = "（弱）";
@@ -126,8 +125,9 @@ string WebServerManage::getWifiScanOptions(){
 	return options;
 }
 void  WebServerManage::wifiConfigWebServer(){
-    // 	AP_init();
-// 	read_html("/wifi.html");
+	// webHtml=fileSystem->read(&wifiWebName);
+	server->AP(Ssid,Password);
+	server->begin();
 
 	server->on("/",HTTP_GET,[this](WebServerRequest *request){
 		this->configRoot(request);
@@ -138,17 +138,14 @@ void  WebServerManage::wifiConfigWebServer(){
 	// server->onNotFound([this](WebServerRequest *request){
 	// 	this->notFound(request);
 	// });
-	server->begin();
-	// printf("");
-// 	DEBUGE_PRINTLN("WifiConfigServer启动,等待配置...");
-
+	ESP_LOGI(TAG,"WifiConfigServer启动,等待配置...");
 }
 void WebServerManage::configRoot(WebServerRequest *request){
 
 	// string html = index_html;
 	 
 
-	string ssidOptions=getWifiScanOptions();
+	std::string ssidOptions=getWifiScanOptions();
 
 	//替换占位符
 	// html.replace("%SSID_OPTIONS%", ssidOptions);  // 填充WiFi列表
@@ -157,34 +154,35 @@ void WebServerManage::configRoot(WebServerRequest *request){
 	// 	DEBUGE_PRINTLN(html);
 	// request->send(200, "text/html", html);
 }
-// void WebServerManage::save_config(WebServerRequest *request){
-// // 	if (request->hasArg("ssid") && request->hasArg("password")) {
-// //     String new_ssid = request->arg("ssid");
-// //     String new_password = request->arg("password");
-    
-// //     // 保存配置
-// //     save_wifi(new_ssid, new_password);
-    
-// //     // 更新STA参数并尝试连接
-// //     sta_ssid = new_ssid;
-// //     sta_password = new_password;
-// //     STA_init();
+void WebServerManage::saveConfig(WebServerRequest *request){
+	if (request->hasArg("ssid") && request->hasArg("password")) {
+		const  std::string newSsid = request->arg("ssid");
+		const  std::string newPassword = request->arg("password");
+		
+		// 保存配置
+		saveWifi(newSsid, newPassword);
+		
+		// 更新STA参数并尝试连接
+		staSsid = newSsid;
+		staPassword = newPassword;
+		server->STA(staSsid,staPassword);
 
-// //     // 向网页返回连接状态
-// //     String html = index_html;
-// //     html.replace("%STATUS%", "配置已保存，正在连接...请等待重启");
-// //     request->send(200, "text/html", html);
+		// 向网页返回连接状态
+		 std::string html = webHtml;
+		// html->replace("%STATUS%", "配置已保存，正在连接...请等待重启");
+		request->send(200, "text/html", &html);
+		// 延迟2秒后重启ESP32，使配置生效
+		// delay(2000);
+		esp_restart();
+  	} 
+	else {
+		 std::string error="参数错误";
+    	request->send(200,"text/html",&error);
+  	}
 
-// //     // 延迟2秒后重启ESP32，使配置生效
-// //     delay(2000);
-// //     ESP.restart();
-// //   } else {
-// //     request->send(400, "text/plain", "参数错误");
-// //   }
-
-// }
+}
 void WebServerManage::indexWebServer(){
-	webHtml=fileSystem->read(&indexWebName);
+	// webHtml=fileSystem->read(&indexWebName);
 	server->STA(Ssid,Password);
 	server->begin();
 
@@ -200,7 +198,7 @@ void WebServerManage::indexWebServer(){
 	server->on("/device-info",HTTP_GET,[this](WebServerRequest*request){
 		this->loadDeviceInfo(request);
 	});
-	server->onUpload("/update",HTTP_POST,[this](WebServerRequest*request,string filename, size_t index, uint8_t *data, size_t len, bool final){
+	server->onUpload("/update",HTTP_POST,[this](WebServerRequest*request, std::string filename, size_t index, uint8_t *data, size_t len, bool final){
 		this->updateSystem(request,filename,index,data,len,final);
 	});
 	server->on("/on",HTTP_POST,[this](WebServerRequest*request){
@@ -216,7 +214,7 @@ void WebServerManage::indexWebServer(){
 
 }
 void WebServerManage::indexRoot(WebServerRequest *request){
-    string html=webHtml;
+     std::string html=webHtml;
 	ESP_LOGV(TAG,"%s",html);
 	request->sendHtml(&html);
 }
@@ -245,8 +243,8 @@ void WebServerManage::getSensorData(WebServerRequest *request){
 	JsonDocument doc; 
 
 	doc["type"] = "sensor_data";
-	doc["cpuTemp"] =systemMonitor->getCpuTemperature();
-	doc["cpuUsage"]=systemMonitor->getCpuUsed();
+	// doc["cpuTemp"] =systemMonitor->getCpuTemperature();
+	// doc["cpuUsage"]=systemMonitor->getCpuUsed();
 // 	// doc["humi"] = sensorData.humidity;
 
 	// 转换为JSON字符串并返回
@@ -264,11 +262,11 @@ void WebServerManage::loadDeviceInfo(WebServerRequest *request){
 	doc["rssi"]=20;
 	doc["ip"]=1922;
 
-	string jsonString=doc.serialize();
+	std::string jsonString=doc.serialize();
 	request->sendJson(200,&jsonString);
 
 }
-void WebServerManage::updateSystem(WebServerRequest *request,string filename, size_t index, uint8_t *data, size_t len, bool final){
+void WebServerManage::updateSystem(WebServerRequest *request,std::string filename, size_t index, uint8_t *data, size_t len, bool final){
      	
 	if(index == 0){
 	// 上传开始：初始化OTA更新
@@ -314,7 +312,6 @@ void WebServerManage::updateSystem(WebServerRequest *request,string filename, si
 }
 void WebServerManage::notFound(WebServerRequest *request){
 	ESP_LOGE(TAG,"未找到处理函数的请求路径:%s",request);
-// 	DEBUGE_PRINTLN(request->url()); 
 	// ESP_LOGE(TAG,"请求方法:%s",request->);
 	// request->send(404, "text/plain", "Not found");
 }
@@ -322,7 +319,7 @@ void WebServerManage::getSystemSetting(WebServerRequest*request){
 
 }
 
-void WebServerManage::begin(){
+esp_err_t WebServerManage::begin(){
 	indexWebServer();
     // pinMode(2, OUTPUT);
 	// loadConfig();
@@ -348,7 +345,7 @@ void WebServerManage::begin(){
 // 		}
 	// }
 	// wifiConfigWebServer();
-
+	return ESP_OK;
 }
 void WebServerManage::setup(){
 

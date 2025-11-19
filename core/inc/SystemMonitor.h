@@ -1,9 +1,7 @@
 #pragma once
-#include <iostream>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+#include "core.hpp"                                                                                        
 #include "driver/temp_sensor.h"
-#include "esp_log.h"
+
 
 namespace core{
 	typedef struct {

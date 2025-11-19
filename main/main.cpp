@@ -1,15 +1,7 @@
-#include "WebServerManage.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_log.h"
-#include "esp_timer.h"
-#include "SystemMonitor.h"
-using namespace manager;
+#include "System.h"
+#include "core.hpp"
 
 extern "C" void app_main(void){
-	SystemMonitor systemMonitor;
-    WebServerManage webServerManage;
-    webServerManage.begin();
 
 	while(1){
 		// static int counter = 0;

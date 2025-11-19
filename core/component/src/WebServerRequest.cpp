@@ -2,7 +2,7 @@
 using namespace core;
 
 
-void WebServerRequest::send(int statusCode,const char* contentType, const string* content){
+void WebServerRequest::send(int statusCode,const char* contentType, const std::string* content){
     // if(responseSent){
     //     ESP_LOGW("WebServer", "Response already sent for URI: %s", req->uri);
     //     return;
@@ -35,35 +35,26 @@ void WebServerRequest::send(int statusCode,const char* contentType, const string
                      req->uri, esp_err_to_name(ret));
         }
 
-
-
-
-
-
-
-
-
-
 }
 
-void WebServerRequest::sendJson(int statusCode, const string* jsonString){
+void WebServerRequest::sendJson(int statusCode, const std::string* jsonString){
     send(statusCode, "application/json", jsonString);
 }
 
-void WebServerRequest::sendText(int statusCode, const string* text) {
+void WebServerRequest::sendText(int statusCode, const std::string* text) {
     send(statusCode, "text/plain", text);
 }
 
-void WebServerRequest::sendText(const string* text) {
+void WebServerRequest::sendText(const std::string* text) {
     sendText(200, text);
 }
 
 // 发送HTML
-void WebServerRequest::sendHtml(int statusCode, const string* html) {
+void WebServerRequest::sendHtml(int statusCode, const std::string* html) {
     send(statusCode, "text/html", html);
 }
 
-void WebServerRequest::sendHtml(const string* html) {
+void WebServerRequest::sendHtml(const std::string* html) {
     sendHtml(200, html);
 }
 
@@ -93,10 +84,23 @@ void WebServerRequest::sendHtml(const string* html) {
 //     sendHtml(statusCode, errorHtml);
 // }
 const char* WebServerRequest::getStatusCodeString(int statusCode) {
+
     switch(statusCode) {
         case 200: return "200 OK";
         case 404: return "404 Not Found";
         case 500: return "500 Internal Server Error";
         default: return "200 OK";
     }
+}
+
+bool WebServerRequest::hasArg(const char*arg){
+    // req.
+
+    if(1){
+        return true;
+    }
+    return false;
+}
+std::string WebServerRequest::arg(const char*arg){
+    return "HHH";
 }

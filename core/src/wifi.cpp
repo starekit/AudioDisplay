@@ -4,12 +4,6 @@ using namespace core;
 // 	initNVS();
 // 	initWifi();
 // }
-void Wifi::initNVS(){
-	if(nvs_flash_init()!=ESP_OK){
-		ESP_LOGE(TAG,"ERROR:init nvs flash");
-		return;
-	}
-}
 void Wifi::initWifi(){
 
 	esp_event_loop_create_default();
@@ -35,7 +29,7 @@ void Wifi::initWifi(){
 										this, 
 										&instance_any_id);
 }
-void Wifi::AP(const string ssid,const string password){
+void Wifi::AP(const std::string ssid,const std::string password){
 	wifi_config_t wifi_config = {
 		.ap = {
 			.ssid = "MyESP32AP",
@@ -50,7 +44,7 @@ void Wifi::AP(const string ssid,const string password){
 	esp_wifi_set_config(WIFI_IF_AP,&wifi_config);
 	esp_wifi_start();
 }
-void Wifi::STA(const string ssid,const string password){
+void Wifi::STA(const std::string ssid,const std::string password){
 
 	wifi_config_t wifi_config = {};
     strncpy((char*)wifi_config.sta.ssid, ssid.c_str(), sizeof(wifi_config.sta.ssid) - 1);

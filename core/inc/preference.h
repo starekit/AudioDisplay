@@ -1,25 +1,22 @@
 #pragma once
-
-#include "nvs_flash.h"
-#include "nvs.h"
-#include <string>
-using namespace std;
+#include "core.hpp"
 namespace core{
     class Preference{
         private:
             nvs_handle_t nvsHandle;
             esp_err_t espError;
-
-
-        private:
-            void initNVS();
         public:
-            void begin(string nameSpace);
+            Preference(){
+            };
+            ~Preference(){
+            }
+            void begin(std::string nameSpace);
 
             template<typename T>
-            void save(const string&dataName,const T&data);
+            void save(const std::string&dataName,const T&data);
             template<typename T> 
-            T read(const string &key);
+            T read(const std::string &key);
+            void end();
             
 
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "core.hpp"
 namespace core{
 
     class Sensor{
