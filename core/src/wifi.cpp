@@ -1,4 +1,4 @@
-#include "WIFI.h"
+#include "wifi.h"
 using namespace core;
 // Wifi::Wifi(){
 // 	initNVS();

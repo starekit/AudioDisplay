@@ -1,4 +1,4 @@
-#include "Preference.h"
+#include "preference.h"
 using namespace core;
 void Preference::begin(std::string nameSpace){//data
     espError=nvs_open(nameSpace.c_str(),NVS_READWRITE,&nvsHandle);

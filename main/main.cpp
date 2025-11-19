@@ -1,4 +1,4 @@
-#include "System.h"
+#include "system.h"
 #include "core.hpp"
 
 extern "C" void app_main(void){
