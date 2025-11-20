@@ -56,7 +56,7 @@ void WebServer::onUpload(const char* url, httpd_method_t method, UploadHandler u
         httpd_register_uri_handler(server, &handle);
 
 }
-void onNotFound(std::function<void(WebServerRequest*request)>notFoundFunction){
+void WebServer::onNotFound(std::function<void(WebServerRequest*request)> notFoundFunction){
     std::string url="";
     // on(url,HTTP_GET,notFoundFunction);
 }
@@ -102,8 +102,7 @@ void WebServer::STA(const std::string ssid,const std::string password){
 	wifi->STA(ssid,password);
 }
 void WebServer::AP(const std::string ssid,const std::string password){
-	// wifi->AP()
-
+	wifi->AP(ssid,password);
 }
 
 void WebServer::processMultipartUpload(httpd_req_t *req, UploadHandler handler, WebServerRequest* request){

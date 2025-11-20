@@ -1,6 +1,6 @@
 #pragma once
 #include "core.hpp"                                                                                        
-#include "driver/temp_sensor.h"
+#include "driver/temperature_sensor.h"
 
 
 namespace core{
@@ -16,19 +16,20 @@ namespace core{
 
         private:
 			cpuStats stats;
+
+            temperature_sensor_handle_t temp_sensor = nullptr;
 			
             static constexpr const char* TAG = "SystemMonitor"; 
             void initSensor();
 			void updateCpuStats();
         public:
             SystemMonitor(){
-				stats={0};
+				stats={};
                 initSensor();
             }
             ~SystemMonitor(){
 				//停止传感器
-				temp_sensor_stop();
-
+                temperature_sensor_disable(temp_sensor);
             }
             float getCpuTemperature();
             float getCpuUsed();

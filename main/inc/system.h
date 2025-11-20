@@ -8,6 +8,7 @@
 #include "webserver_interface.h"
 
 using namespace core;
+using namespace server;
 // SystemMonitor systemMonitor;
 // WebServerManage webServerManage;
 // webServerManage.begin();
@@ -19,19 +20,31 @@ class System{
 	//lock
 
 	private:
-		std::unique_ptr<Nvs> nvs=std::make_unique<Nvs>();
-		std::unique_ptr<FFT> fft=std::make_unique<FFT>();
-		std::unique_ptr<FileSystem> fileSystem=std::make_unique<FileSystem>();
-		std::unique_ptr<SystemMonitor> systemMonitor=std::make_unique<SystemMonitor>();
+		std::unique_ptr<Nvs> nvs_ptr_=std::make_unique<Nvs>();
+		std::unique_ptr<FFT> fft_ptr_=std::make_unique<FFT>();
 
-		// std::unique_ptr<webserver::WebserverInterface> webserver_=std::make_unique<webserver::WebserverInterface>();
-		std::unique_ptr<Led> ledManage=std::make_unique<Led>();
-		std::unique_ptr<Sensor> sensorManage=std::make_unique<Sensor>();
+		std::unique_ptr<WebserverInterface> webserver_ptr_;
+
+		std::shared_ptr<Led> led_ptr_=std::make_unique<Led>();
+		std::shared_ptr<Sensor> sensor_ptr_=std::make_unique<Sensor>();
+		std::shared_ptr<Preference> pref_ptr_=std::make_unique<Preference>();
+		std::shared_ptr<FileSystem> file_ptr_=std::make_unique<FileSystem>();
+		std::shared_ptr<SystemMonitor> monitor_ptr_=std::make_unique<SystemMonitor>();
 
 	public:
-		System();
-		~System();
+		System(){
+			auto pref=std::make_unique<Preference>();
+			// if(pref->read("wifi_config"))
+			// else(){}
+			// webserver_ptr_=WebserverInterface::createIndexserver(pref_ptr_,file_ptr_,monitor_ptr_);
+			webserver_ptr_=WebserverInterface::createWifiserver(pref_ptr_,file_ptr_);
+		}
+		~System(){
+
+		}
 		void begin();
+	private:
+		void selectWebserver();
 
 
 };
@@ -81,5 +94,4 @@ class System{
 // }
 // constexpr const char* AP_SSID = "ESP32";
 // constexpr const char* AP_PASSWORD="12345678";
-// const std::string Ssid="TPLK";
-// const std::string Password="Wang5203714";
+

@@ -4,8 +4,12 @@ namespace core{
 
     class Led{
         public:
-            Led();
-            ~Led();
+            Led(){
+                
+            }
+            ~Led(){
+
+            }
         private:   
             void initLed();
 

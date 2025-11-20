@@ -22,11 +22,14 @@ namespace core{
 			
 			const std::string path="/data";
 
-			esp_vfs_littlefs_conf_t conf{
+			esp_vfs_littlefs_conf_t conf={
 				.base_path="/data",
-				.partition_label="data",
+				.partition_label="data",    
+				.partition = 0,   
 				.format_if_mount_failed=false,
-				.dont_mount=false
+				.read_only=true,
+				.dont_mount=false,
+				.grow_on_mount = false,   
 			};
 			
 			uint64_t maxFileHeapSize=1000000;

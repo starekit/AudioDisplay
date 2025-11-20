@@ -2,14 +2,21 @@
 using namespace core;
 
 void SystemMonitor::initSensor(){
-    temp_sensor_config_t temp_sensor = TSENS_CONFIG_DEFAULT();
-    temp_sensor_set_config(temp_sensor);
-    temp_sensor_start();
+	temperature_sensor_config_t temp_sensor_config= {
+		.range_min = 20,
+		.range_max = 80,
+		.clk_src = TEMPERATURE_SENSOR_CLK_SRC_DEFAULT, 
+		.flags = {
+			.allow_pd = false                     
+		}
+	};
+    ESP_ERROR_CHECK(temperature_sensor_install(&temp_sensor_config, &temp_sensor));
+    ESP_ERROR_CHECK(temperature_sensor_enable(temp_sensor));
 }
 
 float SystemMonitor::getCpuTemperature(){
     float temp = 0;
-    temp_sensor_read_celsius(&temp);
+ 	ESP_ERROR_CHECK(temperature_sensor_get_celsius(temp_sensor, &temp));
     ESP_LOGV(TAG,"CPU Temperature: %.2f °C\n", temp);
     return temp;
 }

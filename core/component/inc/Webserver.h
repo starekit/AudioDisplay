@@ -44,7 +44,7 @@ namespace core{
 				std::function<void (WebServerRequest *request)> handleFunction);
 				void on(const char* url, 
 				std::function<void(WebServerRequest* request)> handleFunction);
-				void onNotFound(std::function<void(WebServerRequest*request)>notFoundFunction);
+				void onNotFound(std::function<void(WebServerRequest*request)> notFoundFunction);
 				void onUpload(const char* url, httpd_method_t method, UploadHandler uploadFunction);
 		};	
 

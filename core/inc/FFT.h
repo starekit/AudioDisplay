@@ -4,8 +4,12 @@
 namespace core{
     class FFT{
         public:
-			FFT();
-			~FFT();
+			FFT(){
+
+            }
+			~FFT(){
+                
+            }
 
 		private:
 			

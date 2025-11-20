@@ -5,17 +5,19 @@
 namespace core{
 	class Wifi{
 		private:
-			static constexpr const char* TAG = "Wifi"; 
+			static constexpr const char* TAG = "Wifi";
+			
+			esp_event_handler_instance_t instance_any_id;
         public:
-			Wifi(){
-				initWifi();
-			}
+			Wifi();
 			~Wifi(){
 			}
         private:
             static void wifiEventHandler(void* arg, esp_event_base_t event_base,
                                 			int32_t event_id, void* event_data);
-            void initWifi();
+
+			void registerHandler();
+			void APConfig(const std::string ssid,const std::string password);
 
         public:
 			void Mode(); 
