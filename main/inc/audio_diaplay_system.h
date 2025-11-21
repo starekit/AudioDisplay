@@ -6,6 +6,7 @@
 #include "sensor.h"
 #include "led.h"
 #include "webserver_interface.h"
+#include "log.hpp"
 
 using namespace core;
 using namespace server;
@@ -33,7 +34,6 @@ class System{
 
 	public:
 		System(){
-			auto pref=std::make_unique<Preference>();
 			// if(pref->read("wifi_config"))
 			// else(){}
 			// webserver_ptr_=WebserverInterface::createIndexserver(pref_ptr_,file_ptr_,monitor_ptr_);

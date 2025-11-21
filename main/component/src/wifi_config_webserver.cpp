@@ -10,18 +10,15 @@ namespace server{
 		public:
 				
 			WifiConfigWebserver(std::shared_ptr<Preference> prefs,std::shared_ptr<FileSystem>file){
-				prefs_ptr_=prefs;
-
-				file_ptr_=file;
-
+				initInterface(prefs,file);
+				startServer();
 				readHtml("wifi.html");
 				begin();
+				wifi_ptr_->scan();
 			}
 			~WifiConfigWebserver(){
-
+				endServer();
 			}
-
-		
 
 			std::string getWifiScanOptions(){
 				
@@ -99,7 +96,7 @@ namespace server{
 					// 更新STA参数并尝试连接
 					ssid_ = newSsid;
 					ssid_ = newPassword;
-					server->STA(ssid_,password_);
+					wifi_ptr_->STA(ssid_,password_);
 
 					// 向网页返回连接状态
 					std::string html = index_html_;
@@ -116,15 +113,14 @@ namespace server{
 			}
 			
 			void begin(){
-
-				server->AP(ap_ssid_,ap_password_);
-				server->begin();
-
-				server->on("/",HTTP_GET,[this](WebServerRequest *request){
-					this->root(request);
+				// wifi_ptr_->AP(ap_ssid_,ap_password_);
+				wifi_ptr_->Mode();
+				
+				on("/",HTTP_GET,[this](WebServerRequest *request){
+					root(request);
 				});
-				server->on("/save", HTTP_POST,[this](WebServerRequest *request){
-					this->saveConfig(request);
+				on("/save", HTTP_POST,[this](WebServerRequest *request){
+					saveConfig(request);
 				});
 				// server->onNotFound([this](WebServerRequest *request){
 				// 	request->sendError(400,"");
@@ -136,7 +132,7 @@ namespace server{
 				// string html = index_html;
 
 
-				std::string ssidOptions=getWifiScanOptions();
+				// std::string ssidOptions=getWifiScanOptions();
 
 				// index_html_.replace("%SSID_OPTIONS%", ssidOptions);
 				// index_html_.replace("%STATUS%", "请选择WiFi并输入密码(无密码则留空)");  // 状态提示
@@ -149,6 +145,7 @@ namespace server{
 				ESP_LOGE(TAG,"未找到处理函数的请求路径:%s",request);
 			}
 	};
+	
 	std::unique_ptr<WebserverInterface> WebserverInterface::createWifiserver(std::shared_ptr<Preference> prefs,std::shared_ptr<FileSystem>file) {
 		return std::make_unique<WifiConfigWebserver>(prefs,file);
 	}

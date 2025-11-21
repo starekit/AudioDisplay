@@ -412,7 +412,7 @@
 		<div class="info-grid">
 			<div class="info-card">
 				<div class="info-label">设备名称</div>
-				<div class="info-value" id="device-name">ESP32-DevKitC</div>
+				<div class="info-value" id="device-name">-- --</div>
 			</div>
 			<div class="info-card">
 				<div class="info-label">IP地址</div>
@@ -692,7 +692,7 @@
 		xhr.onload = function() {
 			// if (xhr.status === 200) {
 				const info = JSON.parse(xhr.responseText);
-
+				document.getElementById("device-name").textContent=info.name;
 				document.getElementById("firmware-version").textContent=info.version;
 				document.getElementById('device-ip').textContent = info.ip;
 				document.getElementById('wifi-signal').textContent = info.rssi + ' dBm';

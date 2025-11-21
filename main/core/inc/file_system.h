@@ -13,8 +13,8 @@ namespace core{
 	class FileSystem{
 		private:
 			#ifdef _WRITEHTML_
-				const string wifiWebName="wifi.html";
-				const string indexWebName="index.html";
+				const std::string wifiWebName="wifi.html";
+				const std::string indexWebName="index.html";
 			#endif
 		#ifdef _ESP_DEBUGE_
 		  	static constexpr const char* TAG = "FileSystem"; 
@@ -27,7 +27,7 @@ namespace core{
 				.partition_label="data",    
 				.partition = 0,   
 				.format_if_mount_failed=false,
-				.read_only=true,
+				.read_only=false,
 				.dont_mount=false,
 				.grow_on_mount = false,   
 			};

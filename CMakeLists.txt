@@ -1,11 +1,15 @@
-# For more information about build system see
-# https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html
-# The following five lines of boilerplate have to be in your project's
-# CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.5)
 
+set(PROJECT_NAME AudioDisplay)
+
+# 包含ESP-IDF项目CMake文件
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-get_filename_component(PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
-set(EXTRA_COMPONENT_DIRS 
-    "${PROJECT_DIR}/core")
-project(AudioDisplay)
+
+# 设置额外的组件目录 - 这些是相对于项目根目录的路径
+set(EXTRA_COMPONENT_DIRS
+    main/component
+    main/core
+)
+
+# 构建项目
+project(${PROJECT_NAME})

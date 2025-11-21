@@ -594,11 +594,11 @@ const std::string indexHtml=R"(
 	const updateInterval = 60;
 	window.onload = function() {
 		ControlInit();
-		animateToPercentHum(30);
+		animateToPercentHum(0);
 
 		loadDeviceInfo(); // 加载设备信息
 
-		setInterval(fetchSensorData, 1000);
+		setInterval(fetchSensorData, 3000);
 	};
 	function ControlInit(){
 		// updateStatus();
