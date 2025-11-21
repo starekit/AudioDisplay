@@ -1,7 +1,6 @@
 #include "wifi.hpp"
 #include "esp_netif.h"
 #include "lwip/ip_addr.h"
-#include "log.hpp"
 using namespace core;
 Wifi::Wifi(){
 	esp_event_loop_create_default();
@@ -258,7 +257,7 @@ void Wifi::scan(){
     }
 	ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&ap_count, ap_records));
 	qsort(ap_records, ap_count, sizeof(wifi_ap_record_t), compareAPByRssi);
-	LOGD(TAG, "=========== Sorted WiFi Scan Results ===========");
+	// LOGD(TAG, "=========== Sorted WiFi Scan Results ===========");
     for (int i = 0; i < ap_count; i++) {
         const char *auth_mode;
         switch (ap_records[i].authmode) {
@@ -274,6 +273,6 @@ void Wifi::scan(){
                 i + 1, ap_records[i].ssid, ap_records[i].rssi, 
                 ap_records[i].primary, auth_mode);
     }
-    LOGD(TAG, "================================================");
+    // LOGD(TAG, "================================================");
 	// free(ap_records);
 }

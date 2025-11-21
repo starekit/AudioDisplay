@@ -7,7 +7,6 @@
 #include "preference.h"
 #include "json_document.hpp"
 #include "system_monitor.h"
-#include "log.hpp"
 
 using namespace core;
 namespace server{
@@ -15,7 +14,6 @@ namespace server{
 		std::string ssid;
 		int rssi;
 	};
-
 
 	class WebserverInterface{
 		private:
@@ -37,9 +35,6 @@ namespace server{
 		protected:
 	
 			std::string index_html_;
-			std::string ssid_;
-			std::string password_;
-
 			
 			std::unique_ptr<Wifi> wifi_ptr_=std::make_unique<Wifi>();
 			std::shared_ptr<Preference> prefs_ptr_=nullptr;
@@ -182,6 +177,7 @@ namespace server{
 					config_.max_uri_handlers = 16;
 					config_.stack_size = 8192;
 					webserver_instance_=this;
+					
 				
 				}else{
 					ESP_LOGE(TAG,"静态接口初始化异常");
@@ -196,7 +192,6 @@ namespace server{
 			}
 			void readHtml(std::string htmlName){
 				index_html_=file_ptr_->read(&htmlName);
-				LOGV(TAG,"html:%s",index_html_.c_str());
 			}
 			void on(const char*url, httpd_method_t method,std::function<void (WebServerRequest *request)> handleFunction){
 				if(webserver_instance_==nullptr){

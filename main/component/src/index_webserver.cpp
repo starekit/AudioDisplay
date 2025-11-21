@@ -8,10 +8,11 @@ namespace server{
 		private:
 			static constexpr const char* TAG="IndexWebServer:";
 
-			static constexpr const char* sta_ssid_="TPLK";
-			static constexpr const char* sta_password_="Wang5203714";
-	
+			// static constexpr const char* sta_ssid_="TPLK";
+			// static constexpr const char* sta_password_="Wang5203714";
 
+			WifiInfoStruct wifi_info_;
+	
 			std::function<float(void)> used_callback_;
 			std::function<float(void)> temperature_callback_;
 
@@ -26,10 +27,13 @@ namespace server{
 
 		public:
 			IndexWebserver(std::shared_ptr<Preference> prefs,std::shared_ptr<FileSystem>file,std::shared_ptr<SystemMonitor> systemMonitor):system_monitor_ptr_(systemMonitor){
-			 	initInterface(prefs,file);
+				initInterface(prefs,file);
 				startServer();
-				
 				readHtml("index.html");
+				wifi_info_.ssid=prefs_ptr_->read<std::string>(NVS_WIFI_NAMESPACE,"ssid");
+				wifi_info_.password=prefs_ptr_->read<std::string>(NVS_WIFI_NAMESPACE,"password");
+				ESP_LOGE(TAG,"ssid:%s",wifi_info_.ssid.c_str());
+				ESP_LOGE(TAG,"password:%s",wifi_info_.password.c_str());
 				begin();
 			}
 			~IndexWebserver(){
@@ -130,7 +134,7 @@ namespace server{
 
 			}
 			void begin(){
-				wifi_ptr_->STA(sta_ssid_,sta_password_);
+				wifi_ptr_->STA(wifi_info_.ssid,wifi_info_.password);
 
 				on("/",HTTP_GET,[this](WebServerRequest *request){
 					root(request);

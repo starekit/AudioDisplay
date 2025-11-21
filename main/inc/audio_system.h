@@ -6,7 +6,6 @@
 #include "sensor.h"
 #include "led.h"
 #include "webserver_interface.h"
-#include "log.hpp"
 
 using namespace core;
 using namespace server;
@@ -21,6 +20,11 @@ class System{
 	//lock
 
 	private:
+
+		static constexpr const char* TAG="System";
+
+		WifiInfoStruct wifiInfo;
+
 		std::unique_ptr<Nvs> nvs_ptr_=std::make_unique<Nvs>();
 		std::unique_ptr<FFT> fft_ptr_=std::make_unique<FFT>();
 
@@ -34,10 +38,7 @@ class System{
 
 	public:
 		System(){
-			// if(pref->read("wifi_config"))
-			// else(){}
-			// webserver_ptr_=WebserverInterface::createIndexserver(pref_ptr_,file_ptr_,monitor_ptr_);
-			webserver_ptr_=WebserverInterface::createWifiserver(pref_ptr_,file_ptr_);
+
 		}
 		~System(){
 

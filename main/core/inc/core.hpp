@@ -20,3 +20,9 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
+
+struct WifiInfoStruct{
+    std::string ssid="";
+    std::string password="";
+    int rssi=0;
+};

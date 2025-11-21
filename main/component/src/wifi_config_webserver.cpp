@@ -14,7 +14,12 @@ namespace server{
 				startServer();
 				readHtml("wifi.html");
 				begin();
-				wifi_ptr_->scan();
+				// wifi_ptr_->scan();
+
+				std::string sta_ssid="TPLK";
+				std::string sta_password="Wang5203714";
+				prefs_ptr_->save(NVS_WIFI_NAMESPACE,"ssid",sta_ssid.c_str());
+				prefs_ptr_->save(NVS_WIFI_NAMESPACE,"password",sta_password.c_str());
 			}
 			~WifiConfigWebserver(){
 				endServer();
@@ -78,10 +83,10 @@ namespace server{
 			}
 
 			void saveWifi(std::string ssid,std::string password){
-				prefs_ptr_->begin("wifi_config");  // 打开命名空间（可写）
+				// prefs_ptr_->begin("wifi_config");  // 打开命名空间（可写）
 				// prefs_ptr_->save("ssid", ssid);
 				// prefs_ptr_->save("password", password);
-				prefs_ptr_->end();
+				// NVS_WIFI_NAMESPACE
 				ESP_LOGD(TAG,"已保存WiFi: %s\n", ssid.c_str());
 			}
 			
@@ -94,9 +99,8 @@ namespace server{
 					saveWifi(newSsid, newPassword);
 
 					// 更新STA参数并尝试连接
-					ssid_ = newSsid;
-					ssid_ = newPassword;
-					wifi_ptr_->STA(ssid_,password_);
+	
+					wifi_ptr_->STA(newSsid,newPassword);
 
 					// 向网页返回连接状态
 					std::string html = index_html_;
@@ -114,7 +118,8 @@ namespace server{
 			
 			void begin(){
 				// wifi_ptr_->AP(ap_ssid_,ap_password_);
-				wifi_ptr_->Mode();
+				// wifi_ptr_->Mode();
+				wifi_ptr_->AP(ap_ssid_,ap_password_);
 				
 				on("/",HTTP_GET,[this](WebServerRequest *request){
 					root(request);
